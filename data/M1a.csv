@@ -1,5 +1,5 @@
-﻿size:,100,
-item area:,2520,
+﻿size,100
+item_area,2520
 no,width,height
 1,1,6
 2,2,8
@@ -101,10 +101,3 @@ no,width,height
 98,6,5
 99,6,2
 100,5,9
-,,
-,,
-,,
-,,
-,,
-,,
-,,
