@@ -1,31 +1,34 @@
-<<<<<<< HEAD
 import Polygon #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import Polygon.Shapes
-=======
-import polygons #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
 
->>>>>>> working
+def drawRectangle(rectangle, drawer, window_height, scale):
+    id = rectangle[0]
+    x_pos = rectangle[1]*scale
+    y_pos = (window_height-rectangle[2])*scale
+    width = rectangle[3]*scale
+    height = rectangle[4]*scale
+    #print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
+    points = ((x_pos,y_pos),(x_pos+width,y_pos),(x_pos+width,y_pos+height),(x_pos,y_pos+height))
+    drawer.polygon(points)
+
 def view(solution):
     """
     Visualise a soln
     :param solution:
     :return:
     """
-    image = Image.new("RGB", (640,480))
-    draw = ImageDraw.Draw(image)
-    rectangles = solution.data
+    WINDOW_HEIGHT = 800
+    WINDOW_WIDTH = 400
+    SCALE = 2
+   
+    image = Image.new("RGB", (WINDOW_WIDTH*SCALE,WINDOW_HEIGHT))
+    drawer = ImageDraw.Draw(image)
+    rectangles = solution.soln
     
-    for rectangle in solution:
-        id = rectangle[0]
-        print("drawing"+str(id))
-        #x_pos = rectangle[1]
-        #y_pos = rectangle[2]
-        width = rectangle[1]
-        height = rectangle[2]
-        points = ((0,0),(0,height),(height,width),(width,0))
-        draw.polygon(points)
+    for rect in rectangles:
+        drawRectangle(rect, drawer, WINDOW_HEIGHT, SCALE)
         
     image.show()    
     return
@@ -175,7 +178,4 @@ class Solution():
 
 #design choice, - represent soln and data as seperate lists, vs single
 
-<<<<<<< HEAD
-=======
 data = load("data\M1a.csv")
->>>>>>> working
