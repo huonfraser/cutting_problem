@@ -2,8 +2,12 @@ import Polygon #library for handling polygons https://pypi.org/project/Polygon/#
 import Polygon.Shapes
 import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
+from random import randint
 
 def drawRectangle(rectangle, drawer, window_height, scale):
+    #takes a rectangle (id,x_pos,y_pos,width,height) and
+    #draws it using a drawing object and scales it 
+    #co-ordinates origin is bottom-left
     id = rectangle[0]
     x_pos = rectangle[1]*scale
     y_pos = (window_height-rectangle[2])*scale
@@ -32,6 +36,19 @@ def view(solution):
         
     image.show()    
     return
+
+def placeRandom(data, window_height, window_width):
+    rectangles = data.data
+    placed_rectangles = []
+    for rect in rectangles:
+        x_pos = randint(0,window_width)
+        y_pos = randint(0,window_height)
+        id = rect[0]
+        width = rect[1]
+        height = rect[2]
+        placed_rectangles.append((id,x_pos,y_pos,width,height))
+    
+    return Solution(placed_rectangles)
 
 def bottom_left_fill(data, width,upperbound):
     #place each item in data, in order
