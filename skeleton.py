@@ -1,12 +1,34 @@
+<<<<<<< HEAD
 import Polygon #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import Polygon.Shapes
+=======
+import polygons #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
+import PIL.ImageDraw as ImageDraw
+import PIL.Image as Image
+
+>>>>>>> working
 def view(solution):
     """
     Visualise a soln
     :param solution:
     :return:
     """
-    pass
+    image = Image.new("RGB", (640,480))
+    draw = ImageDraw.Draw(image)
+    rectangles = solution.data
+    
+    for rectangle in solution:
+        id = rectangle[0]
+        print("drawing"+str(id))
+        #x_pos = rectangle[1]
+        #y_pos = rectangle[2]
+        width = rectangle[1]
+        height = rectangle[2]
+        points = ((0,0),(0,height),(height,width),(width,0))
+        draw.polygon(points)
+        
+    image.show()    
+    return
 
 def bottom_left_fill(data, width,upperbound):
     #place each item in data, in order
@@ -73,7 +95,8 @@ def place(data,width,upperbound):
     :param data: data format list of tuple [(id,width,height)]
     :return:
     """
-    return Solution()
+    pass
+    #return Solution()
 
 def objective(soln):
     """Calculate waste, or minimize waste """
@@ -152,3 +175,7 @@ class Solution():
 
 #design choice, - represent soln and data as seperate lists, vs single
 
+<<<<<<< HEAD
+=======
+data = load("data\M1a.csv")
+>>>>>>> working
