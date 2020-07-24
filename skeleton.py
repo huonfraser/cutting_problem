@@ -7,7 +7,7 @@ from random import randint
 def draw_rectangle(rectangle, drawer, window_height, scale):
     #takes a rectangle (id,x_pos,y_pos,width,height) and
     #draws it using a drawing object and scales it 
-    #co-ordinates origin is bottom-left
+    #co-ordinates origin is bottom-left on drawing
     id = rectangle[0]
     x_pos = rectangle[1]*scale
     y_pos = (window_height-rectangle[2])*scale
@@ -32,7 +32,7 @@ def view(solution):
     rectangles = solution.soln
     
     for rect in rectangles:
-        drawRectangle(rect, drawer, WINDOW_HEIGHT, SCALE)
+        draw_rectangle(rect, drawer, WINDOW_HEIGHT, SCALE)
         
     image.show()    
     return
@@ -76,7 +76,7 @@ def bottom_left_fill(data, width,upperbound):
 
 def load(file_name):
     """
-    Load data from a file , return a sequence of soln and width of the file
+    Load data from a file, return a sequence of soln and width of the file
     :param file_name:
     :return: Loaded instanc
 
@@ -101,6 +101,58 @@ def load(file_name):
         #print(data)
     return Data(data, area), size
 
+def neighbourhood_swap(data):
+    #generates neighbourhood of all sequences from all possible single element swaps
+    neighbourhood = []
+    rectangles = data.data
+    for i in range(0,len(rectangles)):
+        for j in range(i+1,len(rectangles)-1):
+            new_sequence = rectangles.copy()
+            temp1 = new_sequence[i]
+            temp2 = new_sequence[j]
+            new_sequence[i] = temp2
+            new_sequence[j] = temp1
+            neighbourhood.append(new_sequence)
+    
+    return Data(neighbourhood)
+
+def neighbourhood_insert(data):
+    #generates neighbourhood of all sequences from all possible single element insertions
+    neighbourhood = []
+    rectangles = data.data
+    for i in range(0,len(rectangles)):
+        for j in range(0,len(rectangles)):
+            if i==j:
+                continue
+            #copy fresh unaltered sequence, then perform insertion of element
+            new_sequence = rectangles.copy()
+            temp = new_sequence.pop(i)
+            new_sequence.insert(j,temp)
+            neighbourhood.append(new_sequence)
+            
+    return Data(neighbourhood)
+
+def objective(soln):
+    """Calculate waste, or minimize waste """
+    #Calculates height of solution by finding the highest placed block
+    rectangles = soln.soln
+    highest_point = 0
+    for rect in rectangles:
+        pos_y = rect[2]
+        if pos_y > highest_point:
+            highest_point = pos_y
+        
+    return highest_point
+
+def optimal_improvement(data, neighbourhood_function):
+    neighbourhood = neighbourhood_function(data)
+    best_sequence = data
+    best_obj = objective(data)
+    pass
+
+def first_improvement(data, neighbourhood_function):
+    pass
+
 def search(data):
     """
     Search heuristic that takes a sequence of data and modifies them according to a neighbourhood
@@ -118,9 +170,7 @@ def place(data,width,upperbound):
     pass
     #return Solution()
 
-def objective(soln):
-    """Calculate waste, or minimize waste """
-    return 0
+
 
 def run(file):
     """
