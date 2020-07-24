@@ -17,6 +17,7 @@ def draw_rectangle(rectangle, drawer, window_height, scale):
     points = ((x_pos,y_pos),(x_pos+width,y_pos),(x_pos+width,y_pos+height),(x_pos,y_pos+height))
     print(points)
     drawer.polygon(points)
+    return
 
 def view(solution):
     """
@@ -146,6 +147,7 @@ def neighbourhood_insert(data):
     rectangles = data.data
     for i in range(0,len(rectangles)):
         for j in range(0,len(rectangles)):
+            #cannot insert element into its original position
             if i==j:
                 continue
             #copy fresh unaltered sequence, then perform insertion of element
@@ -186,33 +188,70 @@ def place(data,width,upperbound):
     pass
     #return Solution()
 
-def place_random(data, window_height, window_width):
-    rectangles = data.data
-    placed_rectangles = []
-    for rect in rectangles:
-        x_pos = randint(0,window_width)
-        y_pos = randint(0,window_height)
-        id = rect[0]
-        width = rect[1]
-        height = rect[2]
-        placed_rectangles.append((id,x_pos,y_pos,width,height))
-    
-    return Solution(placed_rectangles)
 
 def best_improvement(data, neighbourhood_function):
+    """
+    Takes a given sequence and calculates the neighbourhood of adjacent sequences using
+    the given neighbourhood function, finding the solution which results in the lowest 
+    objective function value
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+    neighbourhood_function : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    best_sequence : TYPE
+        DESCRIPTION.
+
+    """
     neighbourhood = neighbourhood_function(data)
-    best_sequence = data
-    solution = place(data)
+    initial_sequence = data
+    initial_solution = place(data)
     best_obj = objective(solution)
+    best_sequence = initial_sequence
     
     for sequence in neighbourhood:
-        solution = place(sequence)
-        
-        
-    pass
+        soln = place(sequence)
+        objective_value = objective(soln)
+        if objective_value<best_obj:
+            best_obj = objective_value
+            best_sequence = sequence
+    
+    return best_sequence
 
 def first_improvement(data, neighbourhood_function):
-    pass
+    """
+    Takes given sequence and finds the first solution of the given neighbourhood 
+    to improve upon the objective function
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+    neighbourhood_function : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    neighbourhood = neighbourhood_function(data)
+    initial_sequence = data
+    initial_solution = place(data)
+    intial_obj = objective(solution)
+    
+    for sequence in neighbourhood:
+        current_solution = place(sequence)
+        next_obj = objective(current_solution)
+        if next_obj<intial_obj:
+            return sequence
+    
+    return initial_solution
 
 
 def run(file):
