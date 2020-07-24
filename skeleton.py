@@ -144,14 +144,6 @@ def objective(soln):
         
     return highest_point
 
-def optimal_improvement(data, neighbourhood_function):
-    neighbourhood = neighbourhood_function(data)
-    best_sequence = data
-    best_obj = objective(data)
-    pass
-
-def first_improvement(data, neighbourhood_function):
-    pass
 
 def search(data):
     """
@@ -170,6 +162,33 @@ def place(data,width,upperbound):
     pass
     #return Solution()
 
+def place_random(data, window_height, window_width):
+    rectangles = data.data
+    placed_rectangles = []
+    for rect in rectangles:
+        x_pos = randint(0,window_width)
+        y_pos = randint(0,window_height)
+        id = rect[0]
+        width = rect[1]
+        height = rect[2]
+        placed_rectangles.append((id,x_pos,y_pos,width,height))
+    
+    return Solution(placed_rectangles)
+
+def best_improvement(data, neighbourhood_function):
+    neighbourhood = neighbourhood_function(data)
+    best_sequence = data
+    solution = place(data)
+    best_obj = objective(solution)
+    
+    for sequence in neighbourhood:
+        solution = place(sequence)
+        
+        
+    pass
+
+def first_improvement(data, neighbourhood_function):
+    pass
 
 
 def run(file):
@@ -208,6 +227,12 @@ def run(file):
 
     pass
 
+def test_view():
+    data, width = load("data\M1a.csv")
+    solution = place_random(data,800,400)
+    view(solution)
+    return
+    
 
 class Data():
     """
@@ -246,3 +271,4 @@ class Solution():
 #design choice, - represent soln and data as seperate lists, vs single
 
 data = load("data\M1a.csv")
+test_view()
