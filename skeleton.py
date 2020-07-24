@@ -15,6 +15,7 @@ def draw_rectangle(rectangle, drawer, window_height, scale):
     height = rectangle[4]*scale
     #print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
     points = ((x_pos,y_pos),(x_pos+width,y_pos),(x_pos+width,y_pos+height),(x_pos,y_pos+height))
+    print(points)
     drawer.polygon(points)
 
 def view(solution):
@@ -26,13 +27,13 @@ def view(solution):
     WINDOW_HEIGHT = 800
     WINDOW_WIDTH = 400
     SCALE = 2
-   
+
     image = Image.new("RGB", (WINDOW_WIDTH*SCALE,WINDOW_HEIGHT))
     drawer = ImageDraw.Draw(image)
     rectangles = solution.soln
     
     for rect in rectangles:
-        drawRectangle(rect, drawer, WINDOW_HEIGHT, SCALE)
+        draw_rectangle(rect, drawer, WINDOW_HEIGHT, SCALE)
         
     image.show()    
     return
@@ -50,6 +51,26 @@ def place_random(data, window_height, window_width):
     
     return Solution(placed_rectangles)
 
+def no_fill_polygon(poly1,poly2):
+    """
+    Return nfp of polygon 1 and polygon2, places around polygon 1 that polygon 2 can be placed
+    :param poly1: the free space polygon
+    :param poly2: the polygon to be filled
+    :return: position of the bottom left corner of the polygon
+    """
+
+
+    # search free free area for points
+    # try bottom most left one where fits, nfp polygon
+
+    #return x,y
+    pass
+
+
+def _create_rectangle(x,y,width,height):
+    return Polygon.Polygon([(x,y),(x+width,y),(x+width,y+height),(x,y+height),(x,y)])
+
+
 def bottom_left_fill(data, width,upperbound):
     #place each item in data, in order
 
@@ -57,21 +78,24 @@ def bottom_left_fill(data, width,upperbound):
     #we can take disjoint set of this and width, and edges of this to generate NFP
     #we will need a no-fill-polygon for placement points
 
-    roll_polygon = Polygon.Shapes.Rectangle(width,upperbound)
-    filled_area = None
-    free_area = roll_polygon / filled_area
+    free_area = Polygon.Shapes.Rectangle(width,upperbound) #set roll
+    solns = []
     print(free_area)
 
-    for i in data:
+    for i in data.data:
 
         i_id = i[0]
-        i_x = i[1]
-        i_y = i[2]
+        i_w = i[1]
+        i_h = i[2]
 
+        poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
+        x, y = no_fill_polygon(free_area,poly_rep) #calculate position of polygon
+        solns.append(i_id,x,y,i_w,i_h) # add soln
 
+        free_area = free_area - _create_rectangle(x,y,i_w,i_h) #calculate new free area
 
+    return solns
 
-    pass
 
 
 def load(file_name):
