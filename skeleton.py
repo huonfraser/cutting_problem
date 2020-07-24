@@ -4,7 +4,7 @@ import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
 from random import randint
 
-def drawRectangle(rectangle, drawer, window_height, scale):
+def draw_rectangle(rectangle, drawer, window_height, scale):
     #takes a rectangle (id,x_pos,y_pos,width,height) and
     #draws it using a drawing object and scales it 
     #co-ordinates origin is bottom-left
@@ -37,7 +37,7 @@ def view(solution):
     image.show()    
     return
 
-def placeRandom(data, window_height, window_width):
+def place_random(data, window_height, window_width):
     rectangles = data.data
     placed_rectangles = []
     for rect in rectangles:
