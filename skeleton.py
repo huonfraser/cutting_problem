@@ -158,6 +158,37 @@ def neighbourhood_insert(data):
             
     return Data(neighbourhood)
 
+def neighbourhood_rotate(data):
+    """
+    Generates neighbourhood adjacent to sequence from all possible single element rotations
+    A rotation swaps height and width
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    
+    neighbourhood = []
+    rectangles = data.data
+    for i in range(0,len(rectangles)):
+        new_sequence = rectangles.copy()
+        rect = rectangles[i]
+        id = rect[0]
+        width = rect[1]
+        height = rect[2]
+        rectangles[i] = (id,height,width)
+        neighbourhood.append(new_sequence)
+    
+        
+    return Data(neighbourhood)
+
 def objective(soln):
     """Calculate waste, or minimize waste """
     #Calculates height of solution by finding the highest placed block
@@ -334,4 +365,4 @@ class Solution():
 #design choice, - represent soln and data as seperate lists, vs single
 
 data = load("data\M1a.csv")
-test_view()
+#test_view()
