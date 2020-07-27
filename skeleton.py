@@ -1,8 +1,42 @@
 from placement import *
 from view import *
 from neighbourhood import *
+from search import *
 
 from random import randint
+
+class Data:
+    """
+    Holder class for input data set,
+    represent a sequence of data
+
+    data format list of tuple [(id,width,height)]
+    """
+
+    data = []
+    area = 0
+
+    def __init__(self, data, area=None):
+        self.data = data
+        if(area == None):
+            #calculate area
+            pass
+        else:
+            self.area = area
+
+
+class Solution:
+    """
+    Soln format list of tuple [(id,posx,posy,width,height)]
+    """
+
+    soln = []
+
+    def __init__(self,soln=None):
+        self.soln = soln
+    """
+    Holder class for soln representation
+    """
 
 def load(file_name):
     """
@@ -98,40 +132,9 @@ class cutting_problem:
         return Data(data)
 
 
-class Data():
-    """
-    Holder class for input data set,
-    represent a sequence of data
 
-    data format list of tuple [(id,width,height)]
-    """
-
-    data = []
-    area = 0
-
-    def __init__(self, data, area=None):
-        self.data = data
-        if(area == None):
-            #calculate area
-            pass
-        else:
-            self.area = area
-
-
-class Solution():
-    """
-    Soln format list of tuple [(id,posx,posy,width,height)]
-    """
-
-    soln = []
-
-    def __init__(self,soln=None):
-        self.soln = soln
-    """
-    Holder class for soln representation
-    """
 
 #design choice, - represent soln and data as seperate lists, vs single
 
-data = load("data\M1a.csv")
+#data = load("data\M1a.csv")
 #test_view()

@@ -1,4 +1,6 @@
 from skeleton import *
+from placement import *
+from random import randint
 
 file = "data\M1a.csv"
 data, width = load(file)

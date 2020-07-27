@@ -1,6 +1,7 @@
-from skeleton import *
 import Polygon #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import Polygon.Shapes
+from random import randint
+import skeleton
 
 def place_random(data, window_height, window_width):
     rectangles = data.data
@@ -13,9 +14,9 @@ def place_random(data, window_height, window_width):
         height = rect[2]
         placed_rectangles.append((id ,x_pos ,y_pos ,width ,height))
 
-    return Solution(placed_rectangles)
+    return skeleton.Solution(placed_rectangles)
 
-def no_fill_polygon(poly1 ,poly2):
+def no_fill_polygon(poly1, poly2):
     """
     Return nfp of polygon 1 and polygon2, places around polygon 1 that polygon 2 can be placed
     :param poly1: the free space polygon
@@ -50,7 +51,7 @@ def tristrip_to_triangles(tristrip):
         val2 = (tristrip[ i +1])
         val3 = (tristrip[ i +2])
         # find bottom left triangle, order bottomleft,bottomright,top (do we ignore top right triangle)
-        triangles.append(val1 ,val2 ,val3)
+        triangles.append((val1 ,val2 ,val3))
 
     # print(triangles)
     return triangles
