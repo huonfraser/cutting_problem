@@ -16,6 +16,7 @@ def draw_rectangle(rectangle, drawer, window_height, scale):
     #print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
     points = ((x_pos,y_pos),(x_pos+width,y_pos),(x_pos+width,y_pos+height),(x_pos,y_pos+height))
     drawer.polygon(points)
+    return
 
 def view(solution):
     """
@@ -145,6 +146,7 @@ def neighbourhood_insert(data):
     rectangles = data.data
     for i in range(0,len(rectangles)):
         for j in range(0,len(rectangles)):
+            #cannot insert element into its original position
             if i==j:
                 continue
             #copy fresh unaltered sequence, then perform insertion of element
@@ -153,6 +155,37 @@ def neighbourhood_insert(data):
             new_sequence.insert(j,temp)
             neighbourhood.append(new_sequence)
             
+    return Data(neighbourhood)
+
+def neighbourhood_rotate(data):
+    """
+    Generates neighbourhood adjacent to sequence from all possible single element rotations
+    A rotation swaps height and width
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    
+    neighbourhood = []
+    rectangles = data.data
+    for i in range(0,len(rectangles)):
+        new_sequence = rectangles.copy()
+        rect = rectangles[i]
+        id = rect[0]
+        width = rect[1]
+        height = rect[2]
+        rectangles[i] = (id,height,width)
+        neighbourhood.append(new_sequence)
+    
+        
     return Data(neighbourhood)
 
 def objective(soln):
@@ -167,14 +200,6 @@ def objective(soln):
         
     return highest_point
 
-def optimal_improvement(data, neighbourhood_function):
-    neighbourhood = neighbourhood_function(data)
-    best_sequence = data
-    best_obj = objective(data)
-    pass
-
-def first_improvement(data, neighbourhood_function):
-    pass
 
 def search(data):
     """
@@ -193,6 +218,70 @@ def place(data,width,upperbound):
     pass
     #return Solution()
 
+
+def best_improvement(data, neighbourhood_function):
+    """
+    Takes a given sequence and calculates the neighbourhood of adjacent sequences using
+    the given neighbourhood function, finding the solution which results in the lowest 
+    objective function value
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+    neighbourhood_function : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    best_sequence : TYPE
+        DESCRIPTION.
+
+    """
+    neighbourhood = neighbourhood_function(data)
+    initial_sequence = data
+    initial_solution = place(data)
+    best_obj = objective(solution)
+    best_sequence = initial_sequence
+    
+    for sequence in neighbourhood:
+        soln = place(sequence)
+        objective_value = objective(soln)
+        if objective_value<best_obj:
+            best_obj = objective_value
+            best_sequence = sequence
+    
+    return best_sequence
+
+def first_improvement(data, neighbourhood_function):
+    """
+    Takes given sequence and finds the first solution of the given neighbourhood 
+    to improve upon the objective function
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+    neighbourhood_function : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    neighbourhood = neighbourhood_function(data)
+    initial_sequence = data
+    initial_solution = place(data)
+    intial_obj = objective(solution)
+    
+    for sequence in neighbourhood:
+        current_solution = place(sequence)
+        next_obj = objective(current_solution)
+        if next_obj<intial_obj:
+            return sequence
+    
+    return initial_solution
 
 
 def run(file):
@@ -231,6 +320,12 @@ def run(file):
 
     pass
 
+def test_view():
+    data, width = load("data\M1a.csv")
+    solution = place_random(data,800,400)
+    view(solution)
+    return
+    
 
 class Data():
     """
@@ -269,3 +364,4 @@ class Solution():
 #design choice, - represent soln and data as seperate lists, vs single
 
 data = load("data\M1a.csv")
+#test_view()
