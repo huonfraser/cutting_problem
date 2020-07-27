@@ -64,8 +64,32 @@ def no_fill_polygon(poly1,poly2):
     # try bottom most left one where fits, nfp polygon
 
     #return x,y
+    tristrip = poly1.triStrip()
+    triangles = tristrip_to_triangles(tristrip)
+    #order triangles by smallest x, smallest y if equal
+    for t in triangles:
+        #try to fit in bottom left
+        #if fit,poly2 inside poly1 ,return
+
+        #else continue
+
+    #should never reach this point
+
+
     pass
 
+def tristrip_to_triangles(tristrip):
+    tristrip = tristrip[0]
+    triangles = []
+    for i in range(0,len(tristrip)-2):
+        val1 = (tristrip[i])
+        val2 = (tristrip[i+1])
+        val3 = (tristrip[i+2])
+        #find bottom left triangle, order bottomleft,bottomright,top (do we ignore top right triangle)
+        triangles.append(val1,val2,val3)
+
+    #print(triangles)
+    return triangles
 
 def _create_rectangle(x,y,width,height):
     return Polygon.Polygon([(x,y),(x+width,y),(x+width,y+height),(x,y+height),(x,y)])
