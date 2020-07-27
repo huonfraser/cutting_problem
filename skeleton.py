@@ -1,126 +1,8 @@
-import Polygon #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
-import Polygon.Shapes
-import PIL.ImageDraw as ImageDraw
-import PIL.Image as Image
+from placement import *
+from view import *
+from neighbourhood import *
+
 from random import randint
-
-def draw_rectangle(rectangle, drawer, window_height, scale):
-    #takes a rectangle (id,x_pos,y_pos,width,height) and
-    #draws it using a drawing object and scales it 
-    #co-ordinates origin is bottom-left on drawing
-    id = rectangle[0]
-    x_pos = rectangle[1]*scale
-    y_pos = (window_height-rectangle[2])*scale
-    width = rectangle[3]*scale
-    height = rectangle[4]*scale
-    #print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
-    points = ((x_pos,y_pos),(x_pos+width,y_pos),(x_pos+width,y_pos+height),(x_pos,y_pos+height))
-    drawer.polygon(points)
-    return
-
-def view(solution):
-    """
-    Visualise a soln
-    :param solution:
-    :return:
-    """
-    WINDOW_HEIGHT = 800
-    WINDOW_WIDTH = 400
-    SCALE = 2
-
-    image = Image.new("RGB", (WINDOW_WIDTH*SCALE,WINDOW_HEIGHT))
-    drawer = ImageDraw.Draw(image)
-    rectangles = solution.soln
-    
-    for rect in rectangles:
-        draw_rectangle(rect, drawer, WINDOW_HEIGHT, SCALE)
-        
-    image.show()    
-    return
-
-def place_random(data, window_height, window_width):
-    rectangles = data.data
-    placed_rectangles = []
-    for rect in rectangles:
-        x_pos = randint(0,window_width)
-        y_pos = randint(0,window_height)
-        id = rect[0]
-        width = rect[1]
-        height = rect[2]
-        placed_rectangles.append((id,x_pos,y_pos,width,height))
-    
-    return Solution(placed_rectangles)
-
-def no_fill_polygon(poly1,poly2):
-    """
-    Return nfp of polygon 1 and polygon2, places around polygon 1 that polygon 2 can be placed
-    :param poly1: the free space polygon
-    :param poly2: the polygon to be filled
-    :return: position of the bottom left corner of the polygon
-    """
-
-
-    # search free free area for points
-    # try bottom most left one where fits, nfp polygon
-
-    #return x,y
-    tristrip = poly1.triStrip()
-    triangles = tristrip_to_triangles(tristrip)
-    #order triangles by smallest x, smallest y if equal
-    for t in triangles:
-        #try to fit in bottom left
-        #if fit,poly2 inside poly1 ,return
-
-        #else continue
-
-    #should never reach this point
-
-
-    pass
-
-def tristrip_to_triangles(tristrip):
-    tristrip = tristrip[0]
-    triangles = []
-    for i in range(0,len(tristrip)-2):
-        val1 = (tristrip[i])
-        val2 = (tristrip[i+1])
-        val3 = (tristrip[i+2])
-        #find bottom left triangle, order bottomleft,bottomright,top (do we ignore top right triangle)
-        triangles.append(val1,val2,val3)
-
-    #print(triangles)
-    return triangles
-
-def _create_rectangle(x,y,width,height):
-    return Polygon.Polygon([(x,y),(x+width,y),(x+width,y+height),(x,y+height),(x,y)])
-
-
-def bottom_left_fill(data, width,upperbound):
-    #place each item in data, in order
-
-    #generate a union polygon of placed, of size less than width
-    #we can take disjoint set of this and width, and edges of this to generate NFP
-    #we will need a no-fill-polygon for placement points
-
-    free_area = Polygon.Shapes.Rectangle(width,upperbound) #set roll
-    solns = []
-    print(free_area)
-
-    for i in data.data:
-
-        i_id = i[0]
-        i_w = i[1]
-        i_h = i[2]
-
-        poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
-        x, y = no_fill_polygon(free_area,poly_rep) #calculate position of polygon
-        solns.append(i_id,x,y,i_w,i_h) # add soln
-
-        free_area = free_area - _create_rectangle(x,y,i_w,i_h) #calculate new free area
-
-    return solns
-
-
 
 def load(file_name):
     """
@@ -149,69 +31,6 @@ def load(file_name):
         #print(data)
     return Data(data, area), size
 
-def neighbourhood_swap(data):
-    #generates neighbourhood of all sequences from all possible single element swaps
-    neighbourhood = []
-    rectangles = data.data
-    for i in range(0,len(rectangles)):
-        for j in range(i+1,len(rectangles)-1):
-            new_sequence = rectangles.copy()
-            temp1 = new_sequence[i]
-            temp2 = new_sequence[j]
-            new_sequence[i] = temp2
-            new_sequence[j] = temp1
-            neighbourhood.append(new_sequence)
-    
-    return Data(neighbourhood)
-
-def neighbourhood_insert(data):
-    #generates neighbourhood of all sequences from all possible single element insertions
-    neighbourhood = []
-    rectangles = data.data
-    for i in range(0,len(rectangles)):
-        for j in range(0,len(rectangles)):
-            #cannot insert element into its original position
-            if i==j:
-                continue
-            #copy fresh unaltered sequence, then perform insertion of element
-            new_sequence = rectangles.copy()
-            temp = new_sequence.pop(i)
-            new_sequence.insert(j,temp)
-            neighbourhood.append(new_sequence)
-            
-    return Data(neighbourhood)
-
-def neighbourhood_rotate(data):
-    """
-    Generates neighbourhood adjacent to sequence from all possible single element rotations
-    A rotation swaps height and width
-
-    Parameters
-    ----------
-    data : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
-    """
-    
-    neighbourhood = []
-    rectangles = data.data
-    for i in range(0,len(rectangles)):
-        new_sequence = rectangles.copy()
-        rect = rectangles[i]
-        id = rect[0]
-        width = rect[1]
-        height = rect[2]
-        rectangles[i] = (id,height,width)
-        neighbourhood.append(new_sequence)
-    
-        
-    return Data(neighbourhood)
-
 def objective(soln):
     """Calculate waste, or minimize waste """
     #Calculates height of solution by finding the highest placed block
@@ -225,131 +44,59 @@ def objective(soln):
     return highest_point
 
 
-def search(data):
-    """
-    Search heuristic that takes a sequence of data and modifies them according to a neighbourhood
-    :param data: data format list of tuple [(id,width,height)]
-    :return:
-    """
-    return Data(data)
 
-def place(data,width,upperbound):
-    """
-    Placement algorithm that takes a sequence of data and places them according to a heuristic
-    :param data: data format list of tuple [(id,width,height)]
-    :return:
-    """
-    pass
-    #return Solution()
+class cutting_problem:
 
+    def run(self,file):
+        """
+        Run a local search algorithm:
+        Has the following elements:
+        1. Loading function
+        2. Initial soln generator
+        3. Stopping criteria
+        4. Placement heuristic
+        5. Search heuristic
+        6. Output viewer
+        7. Objective function
+        :return:
+        """
+        #Step 1: Load
+        data,self.width = load(file)
+        self.lowerbound = data.area/self.width
+        self.upperbound = self.lowerbound * 4#claculat upper bound
 
-def best_improvement(data, neighbourhood_function):
-    """
-    Takes a given sequence and calculates the neighbourhood of adjacent sequences using
-    the given neighbourhood function, finding the solution which results in the lowest 
-    objective function value
+        #Step 2: Generate initial soln
+        solution = self.place(data,self.width,self.upperbound)
 
-    Parameters
-    ----------
-    data : TYPE
-        DESCRIPTION.
-    neighbourhood_function : TYPE
-        DESCRIPTION.
+        #Step 3 iterate (with stopping criterion)
+            #3.a Search
+            #3.b Fill
+        numIterations = 0
+        for i in range(0,numIterations):
+            data = self.search(data)
+            solution = self.place(data,self.width,self.upperbound)
 
-    Returns
-    -------
-    best_sequence : TYPE
-        DESCRIPTION.
+        #Step 4: Visualise soln
+        view(solution)
+        pass
 
-    """
-    neighbourhood = neighbourhood_function(data)
-    initial_sequence = data
-    initial_solution = place(data)
-    best_obj = objective(solution)
-    best_sequence = initial_sequence
-    
-    for sequence in neighbourhood:
-        soln = place(sequence)
-        objective_value = objective(soln)
-        if objective_value<best_obj:
-            best_obj = objective_value
-            best_sequence = sequence
-    
-    return best_sequence
+    def place(self, data, width, upperbound):
+        """
+        Placement algorithm that takes a sequence of data and places them according to a heuristic
+        :param data: data format list of tuple [(id,width,height)]
+        :return:
+        """
+        return bottom_left_fill(data, width, upperbound)
+        # return Solution()
 
-def first_improvement(data, neighbourhood_function):
-    """
-    Takes given sequence and finds the first solution of the given neighbourhood 
-    to improve upon the objective function
+    def search(data, neighbourhood_function, acceptence_function, placement_algorithm):
+        """
+        Search heuristic that takes a sequence of data and modifies them according to a neighbourhood
+        :param data: data format list of tuple [(id,width,height)]
+        :return:
+        """
+        return Data(data)
 
-    Parameters
-    ----------
-    data : TYPE
-        DESCRIPTION.
-    neighbourhood_function : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
-    """
-    neighbourhood = neighbourhood_function(data)
-    initial_sequence = data
-    initial_solution = place(data)
-    intial_obj = objective(solution)
-    
-    for sequence in neighbourhood:
-        current_solution = place(sequence)
-        next_obj = objective(current_solution)
-        if next_obj<intial_obj:
-            return sequence
-    
-    return initial_solution
-
-
-def run(file):
-    """
-    Run a local search algorithm:
-    Has the following elements:
-    1. Loading function
-    2. Initial soln generator
-    3. Stopping criteria
-    4. Placement heuristic
-    5. Search heuristic
-    6. Output viewer
-    7. Objective function
-    :return:
-    """
-    #Step 1: Load
-    data,width = load(file)
-    lowerbound = data.area/width
-    upperbound = lowerbound * 4#claculat upper bound
-
-
-
-    #Step 2: Generate initial soln
-    solution = place(data,width,upperbound)
-
-    #Step 3 iterate (with stopping criterion)
-        #3.a Search
-        #3.b Fill
-    numIterations = 0
-    for i in range(0,numIterations):
-        data = search(data)
-        solution = place(data,width,upperbound)
-
-    #Step 4: Visualise soln
-    view(solution)
-
-    pass
-
-def test_view():
-    data, width = load("data\M1a.csv")
-    solution = place_random(data,800,400)
-    view(solution)
-    return
-    
 
 class Data():
     """
@@ -361,7 +108,6 @@ class Data():
 
     data = []
     area = 0
-
 
     def __init__(self, data, area=None):
         self.data = data
