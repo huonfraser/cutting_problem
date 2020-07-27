@@ -15,7 +15,6 @@ def draw_rectangle(rectangle, drawer, window_height, scale):
     height = rectangle[4]*scale
     #print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
     points = ((x_pos,y_pos),(x_pos+width,y_pos),(x_pos+width,y_pos+height),(x_pos,y_pos+height))
-    print(points)
     drawer.polygon(points)
 
 def view(solution):
