@@ -1,7 +1,9 @@
 import Polygon #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import Polygon.Shapes
+import Polygon.IO
 from random import randint
 import skeleton
+import view
 
 def place_random(data, window_width, window_height):
     rectangles = data.data
@@ -28,7 +30,7 @@ def order_triangles(tri1):
 
 
 
-def no_fill_polygon(poly1, poly2):
+def no_fill_polygon(area,poly1, poly2):
     """
     Return nfp of polygon 1 and polygon2, places around polygon 1 that polygon 2 can be placed
     :param poly1: the free space polygon
@@ -46,14 +48,19 @@ def no_fill_polygon(poly1, poly2):
     triangles.sort(key=order_triangles)     # order triangles by smallest x, smallest y if equal
     #print(triangles)
 
+    filled_area = area-poly1
+
     for t in triangles:
         x,y = t[0]
         poly2.shift(x,y)
-        if(poly1.covers(poly2)):
+        #print(poly2)
+        #if(poly1.covers(poly2)):
+        if not poly2.overlaps(filled_area):
             print("can place at",x,y)
+            return x,y
+        else:
+            print("clash")
 
-        return x,y
-        pass
         # else continue
 
     # should never reach this point
@@ -62,21 +69,24 @@ def no_fill_polygon(poly1, poly2):
     pass
 
 def tristrip_to_triangles(tristrip):
-    tristrip = tristrip[0]
-    triangles = []
-    for i in range(0 ,len(tristrip ) -2):
-        val1 = (tristrip[i])
-        val2 = (tristrip[ i +1])
-        val3 = (tristrip[ i +2])
-        # find bottom left triangle, order bottomleft,bottomright,top (do we ignore top right triangle)
 
-        minx = min(min(val1[0],val2[0]),val3[0])
-        miny = min(min(val1[1], val2[1]), val3[1])
-        #print(minx,miny)
-        if val1 == (minx,miny) or val2 == (minx,miny) or val3 == (minx,miny): #ignore topright
-            triangles.append((val1 ,val2 ,val3))
+    triangles = []
+    for tri in tristrip:
+        for i in range(0,len(tri) -2):
+            val1 = (tri[i])
+            val2 = (tri[ i +1])
+            val3 = (tri[ i +2])
+            # find bottom left triangle, order bottomleft,bottomright,top (do we ignore top right triangle)
+
+            minx = min(min(val1[0],val2[0]),val3[0])
+            miny = min(min(val1[1], val2[1]), val3[1])
+            #print(minx,miny)
+            if val1 == (minx,miny) or val2 == (minx,miny) or val3 == (minx,miny): #ignore topright
+                triangles.append((val1 ,val2 ,val3))
 
     # print(triangles)
+    #view.view_triangle(triangles)
+
     return triangles
 
 def _create_rectangle(x ,y ,width ,height):
@@ -90,6 +100,7 @@ def bottom_left_fill(data, width,upperbound):
     #we will need a no-fill-polygon for placement points
 
     free_area = Polygon.Shapes.Rectangle(width,upperbound) #set roll
+    total_area = Polygon.Shapes.Rectangle(width,upperbound)
     solns = []
     #print(free_area)
 
@@ -100,10 +111,14 @@ def bottom_left_fill(data, width,upperbound):
         i_h = i[2]
 
         poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
-        x, y = no_fill_polygon(free_area,poly_rep) #calculate position of polygon
+        x, y = no_fill_polygon(total_area,free_area,poly_rep) #calculate position of polygon
         solns.append((i_id,x,y,i_w,i_h)) # add soln
 
         free_area = free_area - _create_rectangle(x,y,i_w,i_h) #calculate new free area
+        free_area.simplify()
+        #print(free_area)
+        #Polygon.IO.writeSVG('test.svg', (free_area,))
+        #break
 
 
     return skeleton.Solution(solns)
