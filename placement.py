@@ -3,18 +3,30 @@ import Polygon.Shapes
 from random import randint
 import skeleton
 
-def place_random(data, window_height, window_width):
+def place_random(data, window_width, window_height):
     rectangles = data.data
     placed_rectangles = []
+
     for rect in rectangles:
-        x_pos = randint(0 ,window_width)
-        y_pos = randint(0 ,window_height)
-        id = rect[0]
         width = rect[1]
         height = rect[2]
+        x_pos = randint(0, window_width-width)
+        y_pos = randint(0, window_height-height)
+        id = rect[0]
+
         placed_rectangles.append((id ,x_pos ,y_pos ,width ,height))
 
     return skeleton.Solution(placed_rectangles)
+
+def order_triangles(tri1):
+    #triangle of format ((x1,y1),(x2,y2),(x3,y3)), where x1,y1 bottom left
+    bottom_left = tri1[1]
+    pre = int(bottom_left[1])
+    suf = int(bottom_left[0])
+    full = str(pre)+"."+str(suf) #sort by y first then by x if y equal
+    return(float(full))
+
+
 
 def no_fill_polygon(poly1, poly2):
     """
@@ -31,10 +43,16 @@ def no_fill_polygon(poly1, poly2):
     # return x,y
     tristrip = poly1.triStrip()
     triangles = tristrip_to_triangles(tristrip)
-    # order triangles by smallest x, smallest y if equal
+    triangles.sort(key=order_triangles)     # order triangles by smallest x, smallest y if equal
+    #print(triangles)
+
     for t in triangles:
-        # try to fit in bottom left
-        # if fit,poly2 inside poly1 ,return
+        x,y = t[0]
+        poly2.shift(x,y)
+        if(poly1.covers(poly2)):
+            print("can place at",x,y)
+
+        return x,y
         pass
         # else continue
 
@@ -51,7 +69,12 @@ def tristrip_to_triangles(tristrip):
         val2 = (tristrip[ i +1])
         val3 = (tristrip[ i +2])
         # find bottom left triangle, order bottomleft,bottomright,top (do we ignore top right triangle)
-        triangles.append((val1 ,val2 ,val3))
+
+        minx = min(min(val1[0],val2[0]),val3[0])
+        miny = min(min(val1[1], val2[1]), val3[1])
+        #print(minx,miny)
+        if val1 == (minx,miny) or val2 == (minx,miny) or val3 == (minx,miny): #ignore topright
+            triangles.append((val1 ,val2 ,val3))
 
     # print(triangles)
     return triangles
@@ -68,7 +91,7 @@ def bottom_left_fill(data, width,upperbound):
 
     free_area = Polygon.Shapes.Rectangle(width,upperbound) #set roll
     solns = []
-    print(free_area)
+    #print(free_area)
 
     for i in data.data:
 
@@ -78,8 +101,9 @@ def bottom_left_fill(data, width,upperbound):
 
         poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
         x, y = no_fill_polygon(free_area,poly_rep) #calculate position of polygon
-        solns.append(i_id,x,y,i_w,i_h) # add soln
+        solns.append((i_id,x,y,i_w,i_h)) # add soln
 
         free_area = free_area - _create_rectangle(x,y,i_w,i_h) #calculate new free area
 
-    return solns
+
+    return skeleton.Solution(solns)

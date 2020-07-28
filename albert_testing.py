@@ -32,9 +32,9 @@ data,width = load("data\M1a.csv")
 # print(neighbourhood)
 # =============================================================================
 
-random_solution = place_random(data,800,400)
-
-view(random_solution)
+random_solution = place_random(data, 800, 400)
+print(random_solution)
+view(random_solution, 800, 400)
 
 #Step 2: Generate initial soln
 #solution = place_random(data,800,400)

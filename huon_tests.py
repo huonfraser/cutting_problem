@@ -13,7 +13,7 @@ upperbound = lowerbound * 4  # claculat upper bound
 print("loaded",file)
 print("bounds are height:", upperbound, " width: ", width)
 rects = bottom_left_fill(data, width, upperbound)
-print(rects.soln)
+#print(rects.soln)
 print("generated soln")
 
 #solution = skeleton.bottom_left_fill(data,width,upperbound)
