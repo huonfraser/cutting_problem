@@ -9,7 +9,12 @@ random_solution = place_random(data,800,400)
 lowerbound = data.area / width
 upperbound = lowerbound * 4  # claculat upper bound
 
-rects = bottom_left_fill(data,width,upperbound)
+
+print("loaded",file)
+print("bounds are height:", upperbound, " width: ", width)
+rects = bottom_left_fill(data, width, upperbound)
+print(rects.soln)
+print("generated soln")
 
 #solution = skeleton.bottom_left_fill(data,width,upperbound)
 
@@ -19,4 +24,4 @@ rects = bottom_left_fill(data,width,upperbound)
 #rects = Solution([rect1,rect2])
 
 #view(random_solution)
-view(rects)
+view(rects,width,upperbound)
