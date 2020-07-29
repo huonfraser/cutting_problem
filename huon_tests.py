@@ -4,18 +4,21 @@ from random import randint
 from view import *
 
 file = "data\M1a.csv"
-data, width = load(file)
-random_solution = place_random(data,800,400)
+cut = cutting_problem(file)
+soln = cut.run(num_iterations=0)
+cut.view()
+#data, width = load(file)
+#random_solution = place_random(data,800,400)
 
-lowerbound = data.area / width
-upperbound = lowerbound * 4  # claculat upper bound
+#lowerbound = data.area / width
+#upperbound = lowerbound * 4  # claculat upper bound
 
 
-print("loaded",file)
-print("bounds are height:", upperbound, " width: ", width)
-rects = bottom_left_fill(data, width, upperbound)
+
+
+#rects = bottom_left_fill(data, width, upperbound)
 #print(rects.soln)
-print("generated soln")
+
 
 #solution = skeleton.bottom_left_fill(data,width,upperbound)
 
@@ -25,4 +28,4 @@ print("generated soln")
 #rects = Solution([rect1])
 
 #view(random_solution)
-view(rects,width,upperbound)
+#view(rects,width,upperbound)

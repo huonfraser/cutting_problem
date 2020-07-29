@@ -34,9 +34,45 @@ class Solution:
 
     def __init__(self,soln=None):
         self.soln = soln
-    """
-    Holder class for soln representation
-    """
+
+
+    def verify(self):
+        """
+        Verify solution is correct, independent of internal representation of polygons in other methods
+        :return:
+        """
+        i = 0
+        j = 0
+
+        while i < len(self.soln):
+            while j < len(self.soln):
+                if i != j:
+                    check = self._overlap(self.soln[i],self.soln[j])
+                    if not check: # if overlap return false
+                        return False
+                j += 1
+            i+=1
+        return True #if no overlaps, return true
+
+
+
+    def _overlap(self,rect1,rect2):
+        a1 = rect1[1]
+        a2 = rect1[3]+a1
+
+        b1 = rect1[2]
+        b2 = rect1[4]+b1
+
+        c1 = rect2[1]
+        c2 = rect2[3] + c1
+
+        d1 = rect2[2]
+        d2 = rect2[4] + d1
+
+        #teest if a and c ranges overlap AND if b and d ranges overlap
+
+
+
 
 def load(file_name):
     """
@@ -78,11 +114,8 @@ def objective(soln):
     return highest_point
 
 
-
 class cutting_problem:
-
-    def run(self,file):
-        """
+    """
         Run a local search algorithm:
         Has the following elements:
         1. Loading function
@@ -92,27 +125,50 @@ class cutting_problem:
         5. Search heuristic
         6. Output viewer
         7. Objective function
-        :return:
-        """
-        #Step 1: Load
-        data,self.width = load(file)
-        self.lowerbound = data.area/self.width
+    """
+
+    def __init__(self,file = None,debug_mode = False):
+        self.data,self.width = load(file)
+        self.debug_mode = debug_mode
+        self.lowerbound = self.data.area/self.width
         self.upperbound = self.lowerbound * 4#claculat upper bound
 
+        if(self.debug_mode):
+            print("loaded", file)
+            print("bounds are height:", self.upperbound, " width: ", self.width)
+
+
+        self.solution = []
+
+
+    def run(self,num_iterations=1000):
+        """
+
+        :return:
+        """
+
         #Step 2: Generate initial soln
-        solution = self.place(data,self.width,self.upperbound)
+        self.solution = self.place(self.data,self.width,self.upperbound)
+        if self.debug_mode:
+            print("generated initial soln")
 
         #Step 3 iterate (with stopping criterion)
             #3.a Search
             #3.b Fill
-        numIterations = 0
-        for i in range(0,numIterations):
-            data = self.search(data)
-            solution = self.place(data,self.width,self.upperbound)
+        for i in range(0,num_iterations):
+            data = self.search(self.data)
+            self.solution = self.place(data,self.width,self.upperbound)
+        if self.debug_mode:
+            print("generated final soln")
 
+        return self.solution
+
+    def view(self):
+        """
         #Step 4: Visualise soln
-        view(solution)
-        pass
+        :return:
+        """
+        view(self.solution,self.width,self.upperbound)
 
     def place(self, data, width, upperbound):
         """
@@ -123,18 +179,10 @@ class cutting_problem:
         return bottom_left_fill(data, width, upperbound)
         # return Solution()
 
-    def search(data, neighbourhood_function, acceptence_function, placement_algorithm):
+    def search(data, neighbourhood_function, acceptence_function):
         """
         Search heuristic that takes a sequence of data and modifies them according to a neighbourhood
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
         return Data(data)
-
-
-
-
-#design choice, - represent soln and data as seperate lists, vs single
-
-#data = load("data\M1a.csv")
-#test_view()
