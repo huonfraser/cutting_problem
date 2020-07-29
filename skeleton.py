@@ -1,7 +1,6 @@
 from placement import *
 from view import *
 from neighbourhood import *
-from search import *
 
 from random import randint
 
@@ -113,6 +112,9 @@ def objective(soln):
         
     return highest_point
 
+def acceptance_basic(obj_incumbent, obj_challenger):
+    return obj_challenger < obj_incumbent
+
 
 class cutting_problem:
     """
@@ -148,7 +150,7 @@ class cutting_problem:
         """
 
         #Step 2: Generate initial soln
-        self.solution = self.place(self.data,self.width,self.upperbound)
+        self.solution = self.place(self.data)
         if self.debug_mode:
             print("generated initial soln")
 
@@ -156,8 +158,8 @@ class cutting_problem:
             #3.a Search
             #3.b Fill
         for i in range(0,num_iterations):
-            data = self.search(self.data)
-            self.solution = self.place(data,self.width,self.upperbound)
+            self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
+            self.solution = self.place(self.data)
         if self.debug_mode:
             print("generated final soln")
 
@@ -170,19 +172,39 @@ class cutting_problem:
         """
         view(self.solution,self.width,self.upperbound)
 
-    def place(self, data, width, upperbound):
+    def place(self, data):
         """
         Placement algorithm that takes a sequence of data and places them according to a heuristic
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-        return bottom_left_fill(data, width, upperbound,debug_mode=self.debug_mode)
+        return bottom_left_fill(data, self.width, self.upperbound,debug_mode=self.debug_mode)
         # return Solution()
 
-    def search(data, neighbourhood_function, acceptence_function):
+    def search(self, data, neighbourhood_function, acceptance_function, first_improvement):
         """
         Search heuristic that takes a sequence of data and modifies them according to a neighbourhood
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-        return Data(data)
+    
+        initial_solution = self.place(data)
+        neighbourhood = neighbourhood_function(self.data)
+        best_obj = objective(initial_solution)
+        best_sequence = data
+
+        print("beginning search iteration")
+        for sequence in neighbourhood:
+            soln = self.place(sequence)
+            next_obj = objective(soln)
+            #print("Current objective: {} Next objective {}".format(best_obj,next_obj))
+            #if acceptance function is fulfilled, replace best sequence
+            if acceptance_function(best_obj, next_obj):
+                print("Found improvement from {} to {}".format(best_obj, next_obj))
+                best_obj = next_obj
+                best_sequence = sequence
+                if first_improvement:
+                    return best_sequence
+
+        print("No improvement found")
+        return best_sequence

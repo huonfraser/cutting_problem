@@ -1,4 +1,4 @@
-from skeleton import *
+import skeleton
 
 def neighbourhood_rotate(data):
     """
@@ -28,7 +28,7 @@ def neighbourhood_rotate(data):
         rectangles[i] = (id, height, width)
         neighbourhood.append(new_sequence)
 
-    return Data(neighbourhood)
+    return neighbourhood
 
 
 def neighbourhood_swap(data):
@@ -42,9 +42,9 @@ def neighbourhood_swap(data):
             temp2 = new_sequence[j]
             new_sequence[i] = temp2
             new_sequence[j] = temp1
-            neighbourhood.append(new_sequence)
+            neighbourhood.append(skeleton.Data(new_sequence))
 
-    return Data(neighbourhood)
+    return neighbourhood
 
 
 def neighbourhood_insert(data):
@@ -60,7 +60,31 @@ def neighbourhood_insert(data):
             new_sequence = rectangles.copy()
             temp = new_sequence.pop(i)
             new_sequence.insert(j, temp)
-            neighbourhood.append(new_sequence)
+            neighbourhood.append(skeleton.Data(new_sequence))
 
-    return Data(neighbourhood)
+    return neighbourhood
+
+def neighbourhood_sample(neighbourhood, sample_rate):
+    """
+    Takes a neighbourhood and samples sequences at a given interval
+    Should be replaced by a random sampler of some sort
+
+    Parameters
+    ----------
+    neighbourhood : TYPE
+        DESCRIPTION.
+    sample_rate : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    sample : TYPE
+        DESCRIPTION.
+
+    """
+    sample = []
+    for i in range(0,len(neighbourhood)):
+        if i%sample_rate == 0:
+            sample.append(neighbourhood[i])
+    return sample
 

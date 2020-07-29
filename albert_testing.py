@@ -1,42 +1,31 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul 23 15:07:35 2020
-
-@author: albib
-"""
-
-
 from skeleton import *
+from placement import *
 from random import randint
+from view import *
 
-def placeZero(data):
-    rectangles = data.data
-    placed_rectangles = []
-    for rect in rectangles:
-        id = rect[0]
-        width = rect[1]
-        height = rect[2]
-        placed_rectangles.append((id,0,0,width,height))
-    
-    return Solution(placed_rectangles)
+file = "data\M1a.csv"
+cut = cutting_problem(file,debug_mode=False)
+soln = cut.run(num_iterations=5)
+cut.view()
+#data, width = load(file)
+#random_solution = place_random(data,800,400)
+
+#lowerbound = data.area / width
+#upperbound = lowerbound * 4  # claculat upper bound
 
 
-data,width = load("data\M1a.csv")
 
-# =============================================================================
-# stuff = []
-# for i in range(0,5):
-#     stuff.append(i)
-# 
-# neighbourhood = neighbourhood_insert(stuff)
-# print(neighbourhood)
-# =============================================================================
 
-random_solution = place_random(data, 800, 400)
-print(random_solution)
-view(random_solution, 800, 400)
+#rects = bottom_left_fill(data, width, upperbound)
+#print(rects.soln)
 
-#Step 2: Generate initial soln
-#solution = place_random(data,800,400)
-#view(solution)
-#print(solution.soln)
+
+#solution = skeleton.bottom_left_fill(data,width,upperbound)
+
+#rect1 = (1,0.0,0.0,2.0,6.0)
+#rect2 = (2,10.0,0.0,6.0,2.0)
+
+#rects = Solution([rect1])
+
+#view(random_solution)
+#view(rects,width,upperbound)
