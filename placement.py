@@ -30,7 +30,7 @@ def order_triangles(tri1):
 
 
 
-def no_fill_polygon(area,poly1, poly2):
+def no_fill_polygon(area,poly1, poly2,debug_mode=False):
     """
     Return nfp of polygon 1 and polygon2, places around polygon 1 that polygon 2 can be placed
     :param poly1: the free space polygon
@@ -56,10 +56,13 @@ def no_fill_polygon(area,poly1, poly2):
         #print(poly2)
         #if(poly1.covers(poly2)):
         if not poly2.overlaps(filled_area):
-            print("can place at",x,y)
+            if debug_mode:
+                print("can place at",x,y)
+                return x,y,triangles #if debug also return triangles
             return x,y
         else:
-            print("clash")
+            if debug_mode:
+                print("clash")
 
         # else continue
 
@@ -68,7 +71,7 @@ def no_fill_polygon(area,poly1, poly2):
 
     pass
 
-def tristrip_to_triangles(tristrip):
+def tristrip_to_triangles(tristrip,debug_mode = False):
 
     triangles = []
     for tri in tristrip:
@@ -92,7 +95,7 @@ def tristrip_to_triangles(tristrip):
 def _create_rectangle(x ,y ,width ,height):
     return Polygon.Polygon([(x ,y) ,( x +width ,y) ,( x +width , y +height) ,(x , y +height) ,(x ,y)])
 
-def bottom_left_fill(data, width,upperbound):
+def bottom_left_fill(data, width,upperbound,debug_mode=False):
     #place each item in data, in order
 
     #generate a union polygon of placed, of size less than width
@@ -111,11 +114,17 @@ def bottom_left_fill(data, width,upperbound):
         i_h = i[2]
 
         poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
-        x, y = no_fill_polygon(total_area,free_area,poly_rep) #calculate position of polygon
+        if debug_mode:
+            x, y,triangles = no_fill_polygon(total_area, free_area, poly_rep,debug_mode=debug_mode)
+            view.view_debug(solns,triangles,width,upperbound)
+        else:
+            x, y = no_fill_polygon(total_area,free_area,poly_rep,debug_mode=debug_mode) #calculate position of polygon
         solns.append((i_id,x,y,i_w,i_h)) # add soln
 
         free_area = free_area - _create_rectangle(x,y,i_w,i_h) #calculate new free area
         free_area.simplify()
+
+
         #print(free_area)
         #Polygon.IO.writeSVG('test.svg', (free_area,))
         #break

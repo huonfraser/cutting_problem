@@ -176,7 +176,7 @@ class cutting_problem:
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-        return bottom_left_fill(data, width, upperbound)
+        return bottom_left_fill(data, width, upperbound,debug_mode=self.debug_mode)
         # return Solution()
 
     def search(data, neighbourhood_function, acceptence_function):
