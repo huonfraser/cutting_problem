@@ -34,11 +34,10 @@ class Solution:
     def __init__(self,soln=None):
         self.soln = soln
 
-
     def verify(self):
         """
         Verify solution is correct, independent of internal representation of polygons in other methods
-        :return:
+        :return: True if correct soln
         """
         i = 0
         j = 0
@@ -47,15 +46,21 @@ class Solution:
             while j < len(self.soln):
                 if i != j:
                     check = self._overlap(self.soln[i],self.soln[j])
-                    if not check: # if overlap return false
+                    if check: # if overlap return false
                         return False
                 j += 1
             i+=1
         return True #if no overlaps, return true
 
-
-
     def _overlap(self,rect1,rect2):
+        """
+        Chck if two rectangles overlap
+        return true if overlap
+        so want false
+        :param rect1:
+        :param rect2:
+        :return:
+        """
         a1 = rect1[1]
         a2 = rect1[3]+a1
 
@@ -69,6 +74,20 @@ class Solution:
         d2 = rect2[4] + d1
 
         #teest if a and c ranges overlap AND if b and d ranges overlap
+
+        if (a2 >= c1 >= a1) or (a2 >= c2 >= a1):  #if x axis overlap
+            if (b2 >= d1 >= b1) or (b2 >= d2 >= b1):
+                return True
+            if (d2 >= b1 >= d1) or (d2 >= b2 >= d1):
+                return True
+
+        if (c2 >= a1 >= c1) or (c2 >= a2 >= c1):  # if x axis overlap
+            if (b2 >= d1 >= b1) or (b2 >= d2 >= b1):
+                return True
+            if (d2 >= b1 >= d1) or (d2 >= b2 >= d1):
+                return True
+
+        return False
 
 
 
@@ -142,6 +161,20 @@ class cutting_problem:
 
         self.solution = []
 
+    def inital_solution(self):
+        """
+        Find an initial sequence
+        :return:
+        """
+
+        sorted = self.data.data
+        sorted.sort(key = lambda i: i[1]*i[2],reverse = True)
+        self.data = Data(sorted)
+        self.solution = self.place(self.data)
+        print(self.solution.verify())
+
+
+
 
     def run(self,num_iterations=1000):
         """
@@ -150,7 +183,8 @@ class cutting_problem:
         """
 
         #Step 2: Generate initial soln
-        self.solution = self.place(self.data)
+        self.inital_solution()
+
         if self.debug_mode:
             print("generated initial soln")
 

@@ -1,7 +1,9 @@
 from skeleton import *
 import PIL.ImageDraw as ImageDraw
-import PIL.Image as Image
 from colour import Color
+from tkinter import Canvas, Tk, PhotoImage
+from PIL import Image
+
 
 def test_view():
     data, width = load("data\M1a.csv")
@@ -66,12 +68,13 @@ def view_triangle(triangles):
     for tri in triangles:
         draw_triangle(tri, drawer, width,height, SCALEX,SCALEY)
 
+
     image.show()
     return
 
 
 
-def draw_rectangle(rectangle, drawer,window_width,window_height,scalex,scaley,fill):
+def draw_rectangle(rectangle, canvas,window_width,window_height,scalex,scaley,fill):
     # takes a rectangle (id,x_pos,y_pos,width,height) and
     # draws it using a drawing object and scales it
     # co-ordinates origin is bottom-left on drawing
@@ -82,7 +85,7 @@ def draw_rectangle(rectangle, drawer,window_width,window_height,scalex,scaley,fi
     height = rectangle[4] * scaley
     # print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
     points = ((x_pos, y_pos), (x_pos + width, y_pos), (x_pos + width, y_pos - height), (x_pos, y_pos - height))
-    drawer.polygon(points,fill= fill,outline= (255,255,255))
+    canvas.create_rectangle(x_pos,y_pos-height,x_pos+width,y_pos, fill =fill,outline = "black")
     return
 
 
@@ -101,15 +104,24 @@ def view(solution,width,height):
     drawer = ImageDraw.Draw(image)
     rectangles = solution.soln
 
+    window = Tk()
+
+    c = Canvas(window, width=WINDOW_WIDTH, height=WINDOW_WIDTH)
+    c.pack()
+
+    c.create_rectangle(0,0,WINDOW_WIDTH,WINDOW_HEIGHT,outline = "black")
+
     red = Color("red")
     colors = list(red.range_to(Color("green"), len(rectangles)))
     for i in range(0,len(rectangles)):
         rect = rectangles[i]
-        colour = colors[i].rgb
-        r = int(colour[0]*255)
-        g = int(colour[1]*255)
-        b = int(colour[2]*225)
-        draw_rectangle(rect, drawer, width,height, SCALEX,SCALEY,(r,g,b))
+        colour = colors[i].hex
+        #r = int(colour[0]*255)
+        #g = int(colour[1]*255)
+        #b = int(colour[2]*225)
+        draw_rectangle(rect, c, width,height, SCALEX,SCALEY,colour)
 
-    image.show()
+    window.mainloop()
+
+    #image.show()
     return

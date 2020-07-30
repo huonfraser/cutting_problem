@@ -4,7 +4,7 @@ from random import randint
 from view import *
 
 file = "data\M1a.csv"
-cut = cutting_problem(file,debug_mode=True)
+cut = cutting_problem(file,debug_mode=False)
 soln = cut.run(num_iterations=0)
 cut.view()
 #data, width = load(file)
