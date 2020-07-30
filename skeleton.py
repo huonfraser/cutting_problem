@@ -157,9 +157,11 @@ class cutting_problem:
         #Step 3 iterate (with stopping criterion)
             #3.a Search
             #3.b Fill
-        for i in range(0,num_iterations):
-            self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
-            self.solution = self.place(self.data)
+        #for i in range(0,num_iterations):
+         #   self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
+          #  self.solution = self.place(self.data)
+        self.data = self.reduced_variable_neighbourhood(self.data)
+        self.solution = self.place(self.data)
         if self.debug_mode:
             print("generated final soln")
 
@@ -189,7 +191,7 @@ class cutting_problem:
         """
     
         initial_solution = self.place(data)
-        neighbourhood = neighbourhood_function(self.data)
+        neighbourhood = neighbourhood_sample(neighbourhood_function(self.data),0.1)
         best_obj = objective(initial_solution)
         best_sequence = data
 
@@ -206,5 +208,39 @@ class cutting_problem:
                 if first_improvement:
                     return best_sequence
 
-        print("No improvement found")
+        #print("No improvement found")
         return best_sequence
+    
+    def neighbourhood_change(self, current_best, compare_solution, k):
+        current_obj = objective(current_best)
+        next_obj = objective(compare_solution)
+        if next_obj < current_obj:
+            print("Found improvement from {} to {}".format(current_obj, next_obj))
+            current_best = compare_solution
+            k = 1
+            
+        else:
+            k+=1
+        
+        return current_best, k
+    
+    
+    
+    def reduced_variable_neighbourhood(self, data):
+        shake_functions = [shake_insert,shake_swap,shake_rotate]
+        max_k = len(shake_functions)
+        incumbent_solution = self.place(data)
+        
+        for i in range(0,5000):
+            k=0
+            if i%100==0:
+                print("Iteration number {}".format(i))
+        
+            while k < max_k:
+                next_sequence = shake_functions[k](data)
+                next_solution = self.place(next_sequence)
+                incumbent_solution, k = self.neighbourhood_change(incumbent_solution,next_solution,k)
+                
+        return data
+        
+        pass
