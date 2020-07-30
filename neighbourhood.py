@@ -93,6 +93,16 @@ def neighbourhood_sample(neighbourhood, sample_proportion):
         sample.append(sampled_sequence)
     return sample
 
+def highest_rectangle(rectangles):
+    index_highest = 0
+    highest = 0
+    for i in range(0,len(rectangles)):
+        y_pos = rectangles[i][2]
+        if y_pos > highest:
+            highest = y_pos
+            index_highest = i
+    return index_highest
+
 def shake_insert(data):
     #returns a random sequence by single element insertion
     new_sequence = data.data.copy()
@@ -134,6 +144,9 @@ def shake_rotate(data):
     #print("Rotating {}".format(i))
     
     return skeleton.Data(new_sequence)
+    
+    
+    
 
 # =============================================================================
 # def random_insert(data):

@@ -191,10 +191,12 @@ class cutting_problem:
         #Step 3 iterate (with stopping criterion)
             #3.a Search
             #3.b Fill
-        #for i in range(0,num_iterations):
-         #   self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
-          #  self.solution = self.place(self.data)
-        self.data = self.reduced_variable_neighbourhood(self.data)
+# =============================================================================
+#         for i in range(0,num_iterations):
+#             self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
+#             self.solution = self.place(self.data)
+# =============================================================================
+        self.data = self.variable_neighbourhood_descent(self.data)
         self.solution = self.place(self.data)
         if self.debug_mode:
             print("generated final soln")
@@ -225,7 +227,7 @@ class cutting_problem:
         """
     
         initial_solution = self.place(data)
-        neighbourhood = neighbourhood_sample(neighbourhood_function(self.data),0.1)
+        neighbourhood = neighbourhood_function(self.data)
         best_obj = objective(initial_solution)
         best_sequence = data
 
@@ -258,14 +260,25 @@ class cutting_problem:
         
         return current_best, k
     
-    
+    def variable_neighbourhood_descent(self, data):
+        neighbourhood_functions = [neighbourhood_insert,neighbourhood_swap,neighbourhood_rotate]
+        k_max = len(neighbourhood_functions)
+        best_sequence = data
+        k=0
+        while k<k_max:
+            best_solution = self.place(best_sequence)
+            compare_sequence = self.search(best_sequence,neighbourhood_functions[k],acceptance_basic,True)
+            compare_solution = self.place(compare_sequence)
+            best_sequence, k = self.neighbourhood_change(best_solution,compare_solution,k)
+            
+        return best_sequence
     
     def reduced_variable_neighbourhood(self, data):
         shake_functions = [shake_insert,shake_swap,shake_rotate]
         max_k = len(shake_functions)
         incumbent_solution = self.place(data)
         
-        for i in range(0,5000):
+        for i in range(0,500):
             k=0
             if i%100==0:
                 print("Iteration number {}".format(i))
@@ -276,5 +289,3 @@ class cutting_problem:
                 incumbent_solution, k = self.neighbourhood_change(incumbent_solution,next_solution,k)
                 
         return data
-        
-        pass
