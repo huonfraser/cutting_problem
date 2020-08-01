@@ -3,6 +3,8 @@ from view import *
 from neighbourhood import *
 
 from random import randint
+import time
+from datetime import timedelta
 
 class Data:
     """
@@ -191,12 +193,16 @@ class cutting_problem:
         #Step 3 iterate (with stopping criterion)
             #3.a Search
             #3.b Fill
+        start_time = time.time()
+
         for i in range(0,num_iterations):
             self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
             self.solution = self.place(self.data)
         if self.debug_mode:
             print("generated final soln")
 
+        executation_time = time.time()-start_time
+        print("Took ", executation_time/1000, "seconds to execute")
         return self.solution
 
     def view(self):
