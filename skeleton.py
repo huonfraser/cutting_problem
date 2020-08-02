@@ -56,7 +56,7 @@ class Solution:
 
     def _overlap(self,rect1,rect2):
         """
-        Chck if two rectangles overlap
+        Chck if two rectangles overlap, currently edges touching returns invalid
         return true if overlap
         so want false
         :param rect1:
@@ -173,7 +173,7 @@ class cutting_problem:
         sorted.sort(key = lambda i: i[1]*i[2],reverse = True)
         self.data = Data(sorted)
         self.solution = self.place(self.data)
-        print(self.solution.verify())
+        print("Verify result: " , self.solution.verify())
 
 
 

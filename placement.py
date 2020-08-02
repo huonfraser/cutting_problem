@@ -1,6 +1,7 @@
 import Polygon #library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import Polygon.Shapes
 import Polygon.IO
+from Polygon.Utils import warpToOrigin
 from random import randint
 import skeleton
 import view
@@ -52,13 +53,14 @@ def no_fill_polygon(area,poly1, poly2,debug_mode=False):
 
     for t in triangles:
         x,y = t[0]
+        warpToOrigin(poly2)
         poly2.shift(x,y)
         #print(poly2)
         #if(poly1.covers(poly2)):
         if not poly2.overlaps(filled_area):
             if debug_mode:
                 print("can place at",x,y)
-                return x,y,triangles #if debug also return triangles
+                return x, y, triangles #if debug also return triangles
             return x,y
         else:
             if debug_mode:
@@ -67,12 +69,10 @@ def no_fill_polygon(area,poly1, poly2,debug_mode=False):
         # else continue
 
     # should never reach this point
-
-
     pass
 
-def tristrip_to_triangles(tristrip,debug_mode = False):
 
+def tristrip_to_triangles(tristrip,debug_mode = False):
     triangles = []
     for tri in tristrip:
         for i in range(0,len(tri) -2):
@@ -102,8 +102,8 @@ def bottom_left_fill(data, width,upperbound,debug_mode=False):
     #we can take disjoint set of this and width, and edges of this to generate NFP
     #we will need a no-fill-polygon for placement points
 
-    free_area = Polygon.Shapes.Rectangle(width,upperbound) #set roll
-    total_area = Polygon.Shapes.Rectangle(width,upperbound)
+    free_area = _create_rectangle(0,0,width,upperbound) #set roll
+    total_area = _create_rectangle(0,0,width,upperbound)
     solns = []
     #print(free_area)
 
@@ -116,13 +116,20 @@ def bottom_left_fill(data, width,upperbound,debug_mode=False):
         poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
         if debug_mode:
             x, y,triangles = no_fill_polygon(total_area, free_area, poly_rep,debug_mode=debug_mode)
-            view.view_debug(solns,triangles,width,upperbound)
+            free_area = free_area - _create_rectangle(x, y, i_w, i_h)  # calculate new free area
+            free_area.simplify()
+            filled_area = total_area - free_area
+
+
+            view.view_debug(solns,triangles,filled_area,width,upperbound)
         else:
             x, y = no_fill_polygon(total_area,free_area,poly_rep,debug_mode=debug_mode) #calculate position of polygon
+            free_area = free_area - _create_rectangle(x, y, i_w, i_h)  # calculate new free area
+            free_area.simplify()
+
         solns.append((i_id,x,y,i_w,i_h)) # add soln
 
-        free_area = free_area - _create_rectangle(x,y,i_w,i_h) #calculate new free area
-        free_area.simplify()
+
 
 
         #print(free_area)

@@ -42,4 +42,11 @@ sol6 = Solution([
 ])
 #correct
 
-print(sol2.verify())
+sol7 = Solution(
+    [
+        ("a",0,0,2,2),
+        ("b",2,2,2,2)
+    ]
+)
+
+print(sol7.verify())

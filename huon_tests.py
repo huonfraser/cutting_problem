@@ -3,9 +3,9 @@ from placement import *
 from random import randint
 from view import *
 
-file = "data\M1a.csv"
+file = "data\\M1a.csv"
 cut = cutting_problem(file,debug_mode=False)
-soln = cut.run(num_iterations=1)
+soln = cut.run(num_iterations=0)
 cut.view()
 #data, width = load(file)
 #random_solution = place_random(data,800,400)
