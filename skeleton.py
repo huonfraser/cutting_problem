@@ -230,9 +230,13 @@ class cutting_problem:
         neighbourhood = neighbourhood_function(self.data)
         best_obj = objective(initial_solution)
         best_sequence = data
+        length = len(neighbourhood)
 
-        print("beginning search iteration")
-        for sequence in neighbourhood:
+        #print("beginning search iteration")
+        for i in range(0,length):
+            #print("Searched {} out of {} \r".format(i,length),end="")
+            
+            sequence = neighbourhood[i]
             soln = self.place(sequence)
             next_obj = objective(soln)
             #print("Current objective: {} Next objective {}".format(best_obj,next_obj))
@@ -247,30 +251,35 @@ class cutting_problem:
         #print("No improvement found")
         return best_sequence
     
-    def neighbourhood_change(self, current_best, compare_solution, k):
-        current_obj = objective(current_best)
+    def neighbourhood_change(self, current_sequence, compare_sequence, k):
+        current_solution = self.place(current_sequence)
+        current_obj = objective(current_solution)
+        compare_solution = self.place(compare_sequence)
         next_obj = objective(compare_solution)
         if next_obj < current_obj:
-            print("Found improvement from {} to {}".format(current_obj, next_obj))
-            current_best = compare_solution
-            k = 1
+            print("Solution improved from {} to {}".format(current_obj, next_obj))
+            current_sequence = compare_sequence
+            k = 0
             
         else:
             k+=1
         
-        return current_best, k
+        return current_sequence, k
     
     def variable_neighbourhood_descent(self, data):
         neighbourhood_functions = [neighbourhood_insert,neighbourhood_swap,neighbourhood_rotate]
+        n_names = ["insert","swap","rotate"]
         k_max = len(neighbourhood_functions)
         best_sequence = data
         k=0
         while k<k_max:
+            print("searching {}".format(n_names[k]))
             best_solution = self.place(best_sequence)
-            compare_sequence = self.search(best_sequence,neighbourhood_functions[k],acceptance_basic,True)
+            compare_sequence = self.search(best_sequence,neighbourhood_functions[k],acceptance_basic,False)
             compare_solution = self.place(compare_sequence)
-            best_sequence, k = self.neighbourhood_change(best_solution,compare_solution,k)
+            best_sequence, k = self.neighbourhood_change(best_sequence,compare_sequence,k)
             
+        print("Finished VND")
         return best_sequence
     
     def reduced_variable_neighbourhood(self, data):
