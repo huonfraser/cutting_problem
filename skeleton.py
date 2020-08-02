@@ -3,8 +3,6 @@ from view import *
 from neighbourhood import *
 
 from random import randint
-import time
-from datetime import timedelta
 
 class Data:
     """
@@ -56,8 +54,7 @@ class Solution:
 
     def _overlap(self,rect1,rect2):
         """
-        Chck if two rectangles overlap, currently edges touching returns invalid - how do we solve this - we can specify a c
-        cut width parameter and increase dimensions of each placed rectangle to incorporate this
+        Chck if two rectangles overlap
         return true if overlap
         so want false
         :param rect1:
@@ -174,7 +171,7 @@ class cutting_problem:
         sorted.sort(key = lambda i: i[1]*i[2],reverse = True)
         self.data = Data(sorted)
         self.solution = self.place(self.data)
-        print("Verify result: " , self.solution.verify())
+        print(self.solution.verify())
 
 
 
@@ -194,16 +191,16 @@ class cutting_problem:
         #Step 3 iterate (with stopping criterion)
             #3.a Search
             #3.b Fill
-        start_time = time.time()
-
-        for i in range(0,num_iterations):
-            self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
-            self.solution = self.place(self.data)
+# =============================================================================
+#         for i in range(0,num_iterations):
+#             self.data = self.search(self.data, neighbourhood_swap, acceptance_basic, False)
+#             self.solution = self.place(self.data)
+# =============================================================================
+        self.data = self.variable_neighbourhood_descent(self.data)
+        self.solution = self.place(self.data)
         if self.debug_mode:
             print("generated final soln")
 
-        executation_time = time.time()-start_time
-        print("Took ", executation_time/1000, "seconds to execute")
         return self.solution
 
     def view(self):
@@ -233,9 +230,13 @@ class cutting_problem:
         neighbourhood = neighbourhood_function(self.data)
         best_obj = objective(initial_solution)
         best_sequence = data
+        length = len(neighbourhood)
 
-        print("beginning search iteration")
-        for sequence in neighbourhood:
+        #print("beginning search iteration")
+        for i in range(0,length):
+            #print("Searched {} out of {} \r".format(i,length),end="")
+            
+            sequence = neighbourhood[i]
             soln = self.place(sequence)
             next_obj = objective(soln)
             #print("Current objective: {} Next objective {}".format(best_obj,next_obj))
@@ -247,5 +248,53 @@ class cutting_problem:
                 if first_improvement:
                     return best_sequence
 
-        print("No improvement found")
+        #print("No improvement found")
         return best_sequence
+    
+    def neighbourhood_change(self, current_sequence, compare_sequence, k):
+        current_solution = self.place(current_sequence)
+        current_obj = objective(current_solution)
+        compare_solution = self.place(compare_sequence)
+        next_obj = objective(compare_solution)
+        if next_obj < current_obj:
+            print("Solution improved from {} to {}".format(current_obj, next_obj))
+            current_sequence = compare_sequence
+            k = 0
+            
+        else:
+            k+=1
+        
+        return current_sequence, k
+    
+    def variable_neighbourhood_descent(self, data):
+        neighbourhood_functions = [neighbourhood_insert,neighbourhood_swap,neighbourhood_rotate]
+        n_names = ["insert","swap","rotate"]
+        k_max = len(neighbourhood_functions)
+        best_sequence = data
+        k=0
+        while k<k_max:
+            print("searching {}".format(n_names[k]))
+            best_solution = self.place(best_sequence)
+            compare_sequence = self.search(best_sequence,neighbourhood_functions[k],acceptance_basic,False)
+            compare_solution = self.place(compare_sequence)
+            best_sequence, k = self.neighbourhood_change(best_sequence,compare_sequence,k)
+            
+        print("Finished VND")
+        return best_sequence
+    
+    def reduced_variable_neighbourhood(self, data):
+        shake_functions = [shake_insert,shake_swap,shake_rotate]
+        max_k = len(shake_functions)
+        incumbent_solution = self.place(data)
+        
+        for i in range(0,500):
+            k=0
+            if i%100==0:
+                print("Iteration number {}".format(i))
+        
+            while k < max_k:
+                next_sequence = shake_functions[k](data)
+                next_solution = self.place(next_sequence)
+                incumbent_solution, k = self.neighbourhood_change(incumbent_solution,next_solution,k)
+                
+        return data

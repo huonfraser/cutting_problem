@@ -27,7 +27,7 @@ def neighbourhood_rotate(data):
         width = rect[1]
         height = rect[2]
         rectangles[i] = (id, height, width)
-        neighbourhood.append(new_sequence)
+        neighbourhood.append(skeleton.Data(new_sequence))
 
     return neighbourhood
 
