@@ -56,7 +56,8 @@ class Solution:
 
     def _overlap(self,rect1,rect2):
         """
-        Chck if two rectangles overlap, currently edges touching returns invalid
+        Chck if two rectangles overlap, currently edges touching returns invalid - how do we solve this - we can specify a c
+        cut width parameter and increase dimensions of each placed rectangle to incorporate this
         return true if overlap
         so want false
         :param rect1:
