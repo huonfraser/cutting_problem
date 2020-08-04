@@ -95,7 +95,7 @@ def tristrip_to_triangles(tristrip,debug_mode = False):
 def _create_rectangle(x ,y ,width ,height):
     return Polygon.Polygon([(x ,y) ,( x +width ,y) ,( x +width , y +height) ,(x , y +height) ,(x ,y)])
 
-def bottom_left_fill(data, width,upperbound,debug_mode=False):
+def bottom_left_fill(data, width,upperbound,debug_mode=False,buffer = 0):
     #place each item in data, in order
 
     #generate a union polygon of placed, of size less than width
@@ -110,8 +110,8 @@ def bottom_left_fill(data, width,upperbound,debug_mode=False):
     for i in data.data:
 
         i_id = i[0]
-        i_w = i[1]
-        i_h = i[2]
+        i_w = i[1]+buffer
+        i_h = i[2]+buffer
 
         poly_rep = Polygon.Shapes.Rectangle(i_w, i_h) #polygon representation of this shape, floating in space
         if debug_mode:
@@ -127,7 +127,7 @@ def bottom_left_fill(data, width,upperbound,debug_mode=False):
             free_area = free_area - _create_rectangle(x, y, i_w, i_h)  # calculate new free area
             free_area.simplify()
 
-        solns.append((i_id,x,y,i_w,i_h)) # add soln
+        solns.append((i_id,x,y,i_w-buffer,i_h-buffer)) # add soln
 
 
 

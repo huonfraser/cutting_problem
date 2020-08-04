@@ -148,11 +148,13 @@ class cutting_problem:
         7. Objective function
     """
 
-    def __init__(self,file = None,debug_mode = False):
+    def __init__(self,file=None, debug_mode=False, buffer=0.1):
         self.data,self.width = load(file)
         self.debug_mode = debug_mode
         self.lowerbound = self.data.area/self.width
         self.upperbound = self.lowerbound * 4#claculat upper bound
+
+        self.buffer = buffer
 
         if(self.debug_mode):
             print("loaded", file)
@@ -161,14 +163,19 @@ class cutting_problem:
 
         self.solution = []
 
-    def inital_solution(self):
+    def inital_solution(self,sort_critera="area"):
         """
         Find an initial sequence
         :return:
         """
 
         sorted = self.data.data
-        sorted.sort(key = lambda i: i[1]*i[2],reverse = True)
+        if sort_critera == "area":
+            sorted.sort(key = lambda i: i[1]*i[2],reverse = True)
+        elif sort_critera == "width":
+            sorted.sort(key = lambda i: i[1],reverse = True)
+        elif sort_critera == "height":
+            sorted.sort(key=lambda i: i[2], reverse=True)
         self.data = Data(sorted)
         self.solution = self.place(self.data)
         print(self.solution.verify())
@@ -216,7 +223,7 @@ class cutting_problem:
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-        return bottom_left_fill(data, self.width, self.upperbound,debug_mode=self.debug_mode)
+        return bottom_left_fill(data, self.width, self.upperbound,debug_mode=self.debug_mode,buffer=self.buffer)
         # return Solution()
 
     def search(self, data, neighbourhood_function, acceptance_function, first_improvement):
