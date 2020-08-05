@@ -4,6 +4,7 @@ from neighbourhood import *
 
 from random import randint
 
+
 class Data:
     """
     Holder class for input data set,
@@ -18,10 +19,18 @@ class Data:
     def __init__(self, data, area=None):
         self.data = data
         if(area == None):
-            #calculate area
+            self.area=self.calc_area()
             pass
         else:
             self.area = area
+
+    def calc_area(self):
+        total = 0
+
+        for d in self.data:
+            total += d[1]*d[2]
+
+        return total
 
 
 class Solution:
@@ -152,7 +161,7 @@ class cutting_problem:
         self.data,self.width = load(file)
         self.debug_mode = debug_mode
         self.lowerbound = self.data.area/self.width
-        self.upperbound = self.lowerbound * 4#claculat upper bound
+        self.upperbound = self.lowerbound * 1.5#claculat upper bound
 
         self.buffer = buffer
 
@@ -160,37 +169,46 @@ class cutting_problem:
             print("loaded", file)
             print("bounds are height:", self.upperbound, " width: ", self.width)
 
-
         self.solution = []
 
-    def inital_solution(self,sort_critera="area"):
+    def initial_solution(self,sort_criteria="area", rotate_criteria="none"):
         """
         Find an initial sequence
         :return:
         """
 
         sorted = self.data.data
-        if sort_critera == "area":
-            sorted.sort(key = lambda i: i[1]*i[2],reverse = True)
-        elif sort_critera == "width":
-            sorted.sort(key = lambda i: i[1],reverse = True)
-        elif sort_critera == "height":
+        if sort_criteria == "area":
+            sorted.sort(key=lambda i: i[1]*i[2], reverse=True)
+        elif sort_criteria == "width":
+            sorted.sort(key=lambda i: i[1], reverse=True)
+        elif sort_criteria == "height":
             sorted.sort(key=lambda i: i[2], reverse=True)
+        elif sort_criteria == "max":
+            sorted.sort(key=lambda i: max(i[1], i[2]), reverse=True)
+        elif sort_criteria == "min":
+            sorted.sort(key=lambda i: min(i[1], i[2]), reverse=True)
+
+        if rotate_criteria == "none":
+            pass #leave as is
+        elif rotate_criteria == "down":
+            sorted = [(lambda x: (x[0],x[2],x[1]) if x[1] < x[2] else x)(i) for i in sorted]
+            pass #rotate so that width > height
+        elif rotate_criteria == "up":
+            sorted = [(lambda x: (x[0],x[2],x[1]) if x[1] > x[2] else x)(i) for i in sorted]
+
         self.data = Data(sorted)
         self.solution = self.place(self.data)
         print(self.solution.verify())
 
-
-
-
-    def run(self,num_iterations=1000):
+    def run(self, num_iterations=1000):
         """
 
         :return:
         """
 
         #Step 2: Generate initial soln
-        self.inital_solution()
+        self.initial_solution(rotate_criteria="up")
 
         if self.debug_mode:
             print("generated initial soln")
@@ -305,3 +323,4 @@ class cutting_problem:
                 incumbent_solution, k = self.neighbourhood_change(incumbent_solution,next_solution,k)
                 
         return data
+

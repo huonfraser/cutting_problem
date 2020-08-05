@@ -138,25 +138,29 @@ def draw_rectangle(rectangle, canvas,window_width,window_height,scalex,scaley,fi
     # co-ordinates origin is bottom-left on drawing
     id = rectangle[0]
     x_pos = rectangle[1] * scalex
-    y_pos = (window_height - rectangle[2]) * scaley
+    y_pos = window_height - rectangle[2] * scaley
     width = rectangle[3] * scalex
     height = rectangle[4] * scaley
     # print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
-    points = ((x_pos, y_pos), (x_pos + width, y_pos), (x_pos + width, y_pos - height), (x_pos, y_pos - height))
     canvas.create_rectangle(x_pos,y_pos-height,x_pos+width,y_pos, fill =fill,outline = "")
     return
 
 
-def view(solution,width,height):
+def view(solution, width, height):
     """
-    Visualise a soln
+    Visualise a soln with problem dimensions givn by width and height
+    :param height:
+    :param width:
     :param solution:
     :return:
     """
-    WINDOW_HEIGHT = 800
-    WINDOW_WIDTH = 800
-    SCALEX = min(WINDOW_WIDTH/width,WINDOW_HEIGHT/height)
-    SCALEY = min(WINDOW_WIDTH/width,WINDOW_HEIGHT/height)
+    WINDOW_HEIGHT = 800.0
+    WINDOW_WIDTH = 800.0
+    height = height*1.0
+    width = width*1.0
+
+    SCALEX = min(WINDOW_WIDTH/width, WINDOW_HEIGHT/height)
+    SCALEY = min(WINDOW_WIDTH/width, WINDOW_HEIGHT/height)
 
     rectangles = solution.soln
 
@@ -165,7 +169,8 @@ def view(solution,width,height):
     c = Canvas(window, width=WINDOW_WIDTH, height=WINDOW_WIDTH)
     c.pack()
 
-    c.create_rectangle(0,0,WINDOW_WIDTH,WINDOW_HEIGHT,outline = "black")
+    #draw region that can be filled
+    c.create_rectangle(0.0, WINDOW_HEIGHT-height*SCALEY, width*SCALEX, WINDOW_HEIGHT, fill="black", outline="black")
 
     red = Color("red")
     colors = list(red.range_to(Color("green"), len(rectangles)))
@@ -175,7 +180,7 @@ def view(solution,width,height):
         #r = int(colour[0]*255)
         #g = int(colour[1]*255)
         #b = int(colour[2]*225)
-        draw_rectangle(rect, c, width,height, SCALEX,SCALEY,colour)
+        draw_rectangle(rect, c, WINDOW_WIDTH, WINDOW_HEIGHT, SCALEX, SCALEY, colour)
 
     window.mainloop()
 
