@@ -3,8 +3,8 @@ from placement import *
 from random import randint
 from view import *
 
-file = "data\\M1a.csv"
-cut = cutting_problem(file,debug_mode=False)
+file = "data\\M1a_short.csv"
+cut = cutting_problem(file, debug_mode=False, buffer=0.1)
 soln = cut.run(num_iterations=0)
 cut.view()
 #data, width = load(file)
