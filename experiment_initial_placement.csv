@@ -1,0 +1,18 @@
+"sort","rotation","M1a","M2c","M3d"
+"area","none" ,65, 268, 417
+"width","none" ,67,267, 428
+"height", "none,64,260, 420
+"max", "none", 66,270,428
+"min", "none", 66,270,435
+
+"area","down",65,264,417
+"width","down",66,273,419
+"height","down",65,264,417
+"max","down",66,273,419
+"min","down",65,264,417
+
+"area","up",67,264,418
+"width","up",68,279,421
+"height","up",64,273,413
+"max","up",64,264,413
+"min","up",68,270,421

@@ -48,6 +48,61 @@ def neighbourhood_swap(data):
     return neighbourhood
 
 
+def neighbourhood_swap_adjacent(data):
+    """
+    Generate neighbourhood of sequences from swapping adjacent elements
+    :param data:
+    :return:
+    """
+    neighbourhood = []
+    rectangles = data.data
+    length = len(rectangles)
+    for i in range(0, length-1):
+        new_sequence = rectangles.copy()
+        temp1= new_sequence[i]
+        temp2 = new_sequence[i+1]
+        new_sequence[i] = temp2
+        new_sequence[i+1] = temp1
+        neighbourhood.append(skeleton.Data(new_sequence))
+
+    return neighbourhood
+
+
+def neighbourhood_shift_left(data):
+    """
+    Generate neighbourhood by placing last element at the front
+    :param data:
+    :return:
+    """
+    neighbourhood = []
+    rectangles = data.data
+    length = len(rectangles)
+    for i in range(0, length-1):
+        new_sequence = rectangles[1:length].copy()
+        new_sequence.append(rectangles[0])
+        neighbourhood.append(skeleton.Data(new_sequence))
+
+    return neighbourhood
+
+
+def neighbourhood_shift_right(data):
+    """
+    Generate neighbourhood by placing last element at the front
+    :param data:
+    :return:
+    """
+    neighbourhood = []
+    rectangles = data.data
+    length = len(rectangles)
+    for i in range(0, length-1):
+        new_sequence = rectangles[0:length].copy()
+        first = [rectangles[length-1]].copy()
+        new_sequence = first + new_sequence
+        neighbourhood.append(skeleton.Data(new_sequence))
+
+    return neighbourhood
+
+
 def neighbourhood_insert(data):
     # generates neighbourhood of all sequences from all possible single element insertions
     neighbourhood = []
@@ -103,6 +158,13 @@ def highest_rectangle(rectangles):
             index_highest = i
     return index_highest
 
+def shake(fun,data):
+    neighbourhood = fun(data)
+    length = len(neighbourhood)
+    i = randint(0,length)
+    return neighbourhood[i]
+
+
 def shake_insert(data):
     #returns a random sequence by single element insertion
     new_sequence = data.data.copy()
@@ -114,7 +176,7 @@ def shake_insert(data):
     #print("Shaking {} {}".format(element_index,new_position))
     
     return skeleton.Data(new_sequence)
-    
+
 
 def shake_swap(data):
     #returns a random sequence by swapping two elements
@@ -122,7 +184,9 @@ def shake_swap(data):
     new_sequence = data.data.copy()
     sequence_length = len(new_sequence)
     i = randint(0,sequence_length-1)
-    j = randint(0,sequence_length-1)
+    j = -1
+    while j != i:
+        j = randint(0,sequence_length-1)
     temp1 = new_sequence[i]
     temp2 = new_sequence[j]
     new_sequence[i] = temp2

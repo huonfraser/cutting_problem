@@ -142,7 +142,7 @@ def draw_rectangle(rectangle, canvas,window_width,window_height,scalex,scaley,fi
     width = rectangle[3] * scalex
     height = rectangle[4] * scaley
     # print("drawing: {} at ({},{})".format(id,rectangle[1],rectangle[2]))
-    canvas.create_rectangle(x_pos,y_pos-height,x_pos+width,y_pos, fill =fill,outline = "")
+    canvas.create_rectangle(x_pos,y_pos-height,x_pos+width,y_pos, fill =fill,outline = "White")
     return
 
 
