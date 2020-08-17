@@ -188,6 +188,7 @@ class cutting_problem:
         self.reduced_descent = reduced_descent
 
         self.placement_times = []
+        self.placements_searched = 0
 
         if(self.debug_mode):
             print("loaded", file)
@@ -241,10 +242,14 @@ class cutting_problem:
     def run(self, num_iterations=1000):
         """
 
-        :return:
+        :return: solution, height average placement time, number of placements searched
         """
 
         #Step 2: Generate initial soln
+
+        self.placements_searched = 0
+        self.placement_times = []
+
         self.initial_solution(rotate_criteria=self.rotate_criteria, sort_criteria=self.sort_criteria)
         if self.debug_mode:
             print("generated initial soln")
@@ -261,15 +266,17 @@ class cutting_problem:
         waste = 1.0-(self.data.calc_area())/(final_height*self.width)
         print("Waste is " + str(waste))
 
-        print("Average placement time was {}".format(sum(self.placement_times)/len(self.placement_times)))
-        return self.solution
+        avg_time = sum(self.placement_times)/len(self.placement_times)
+        print("Average placement time was {} milliseconds".format(avg_time))
+        print("Number of placements searched was {} ".format(self.placements_searched))
+        return self.solution,final_height, avg_time, self.placements_searched
 
     def view(self):
         """
         #Step 4: Visualise soln
         :return:
         """
-        view(self.solution,self.width,self.upperbound)
+        view(self.solution, self.width, self.upperbound)
 
     def place(self, data):
         """
@@ -279,8 +286,13 @@ class cutting_problem:
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-        solution, time = bottom_left_fill(data, self.width, self.upperbound, debug_mode=self.debug_mode, buffer=self.buffer)
-        self.placement_times.append(time)
+        start_time = datetime.datetime.now()
+
+
+        solution = bottom_left_fill(data, self.width, self.upperbound, debug_mode=self.debug_mode, buffer=self.buffer)
+        end_time = datetime.datetime.now()
+        run_time = end_time - start_time
+        self.placement_times.append(run_time.microseconds*1000) # time in microseconds
         return solution
         # return Solution()
 
@@ -297,6 +309,7 @@ class cutting_problem:
         neighbourhood = neighbourhood_function(data)
         length = len(neighbourhood)
         print("Neighbourhood of size {} ".format(length))
+        self.placements_searched +=length
 
         #keep track of previous, best solution
         initial_sequence = data

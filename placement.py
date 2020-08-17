@@ -113,7 +113,7 @@ def bottom_left_fill(data, width, upperbound, debug_mode=False, buffer=0):
     # we can take disjoint set of this and width, and edges of this to generate NFP
     # we will need a no-fill-polygon for placement points
 
-    start_time = datetime.datetime.now()
+
 
 
     free_area = _create_rectangle(0, 0, width, upperbound)  # set roll
@@ -148,6 +148,5 @@ def bottom_left_fill(data, width, upperbound, debug_mode=False, buffer=0):
         # Polygon.IO.writeSVG('test.svg', (free_area,))
         # break
 
-    end_time = datetime.datetime.now()
-    run_time = end_time-start_time
-    return skeleton.Solution(solns),run_time
+
+    return skeleton.Solution(solns)
