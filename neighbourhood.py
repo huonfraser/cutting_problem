@@ -148,6 +148,13 @@ def neighbourhood_sample(neighbourhood, sample_proportion):
         sample.append(sampled_sequence)
     return sample
 
+def nh_insert_last(data):
+    neighbourhood = []
+    rectangles = data.data
+    n = len(rectangles)
+    for i in range(n):
+        
+
 def highest_rectangle(rectangles):
     index_highest = 0
     highest = 0

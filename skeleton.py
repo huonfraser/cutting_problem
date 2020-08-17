@@ -1,6 +1,7 @@
 from placement import *
 from view import *
 from neighbourhood import *
+import sys
 
 from random import randint
 
@@ -233,6 +234,8 @@ class cutting_problem:
         neighbourhood_functions = [neighbourhood_insert, neighbourhood_swap, neighbourhood_rotate]
         n_names = ["insert", "swap", "rotate"]
 
+        return self.large_neighbourhood_search(self.data,neighbourhood_function)
+
         if reduced_descent:
             return self.reduced_variable_neighbourhood(self.data, neighbourhoods=neighbourhood_functions, names=n_names)
         else:
@@ -250,7 +253,7 @@ class cutting_problem:
             print("generated initial soln")
 
         #Search
-        self.data = self.search()
+        self.data = self.search(reduced_descent=self.reduced_descent)
         self.solution = self.place(self.data)
         final_height = objective(self.solution)
 
@@ -261,7 +264,7 @@ class cutting_problem:
         waste = 1.0-(self.data.calc_area())/(final_height*self.width)
         print("Waste is " + str(waste))
 
-        print("Average placement time was {}".format(sum(self.placement_times)/len(self.placement_times)))
+        #print("Average placement time was {}".format(sum(self.placement_times)/len(self.placement_times)))
         return self.solution
 
     def view(self):
@@ -310,7 +313,10 @@ class cutting_problem:
 
         #print("beginning search iteration")
         for i in range(1, length):
-            #print("Searched {} out of {} \r".format(i,length),end="")
+            #if i%100 == 0:
+                #print("Searched {} out of {}".format(i,length))
+            #sys.stdout.write("Searched {} out of {}\r".format(i,length))
+            #sys.stdout.flush()
             
             next_sequence = neighbourhood[i]
             next_soln = self.place(next_sequence)
@@ -319,7 +325,7 @@ class cutting_problem:
             #if acceptance function is fulfilled, replace best sequence
 
             if acceptance_function(best_obj, next_obj):
-                #print("Found improvement from {} to {}".format(best_obj, next_obj))
+                print("Found improvement from {} to {}".format(best_obj, next_obj))
                 best_obj = next_obj
                 best_sequence = next_sequence
                 best_solution = next_soln
@@ -371,7 +377,7 @@ class cutting_problem:
         print("Finished VND")
         return best_sequence
     
-    def reduced_variable_neighbourhood(self, data, num_iterations=500, neighbourhoods=[], names=[]):
+    def reduced_variable_neighbourhood(self, data, num_iterations=10000000, neighbourhoods=[], names=[]):
         """
         Need to work out neighbourhood change
         :param data:
@@ -388,8 +394,10 @@ class cutting_problem:
                 print("Iteration number {}".format(i))
             while k < k_max:
                 compare_sequence = shake(neighbourhoods[k], data)
-                compare_solution = self.place(compare_solution)
+                #compare_solution = self.place(compare_sequence)
                 best_sequence, k = self.neighbourhood_change(best_sequence, compare_sequence, k)
                 
         return best_sequence
 
+    def large_neighbourhood_search(self,data,num_iterations,neighbourhoods=[]):
+        

@@ -4,8 +4,9 @@ from random import randint
 from view import *
 
 file = "data\M1a.csv"
-cut = cutting_problem(file,debug_mode=False)
+cut = cutting_problem(file,debug_mode=False, reduced_descent = True)
 soln = cut.run(num_iterations=5)
+#soln = cut.initial_solution(sort_criteria="area", rotate_criteria="none")
 cut.view()
 #data, width = load(file)
 #random_solution = place_random(data,800,400)
