@@ -1,8 +1,6 @@
 from placement import *
 from view import *
 from neighbourhood import *
-import sys
-from experimentation import *
 
 from random import randint
 
@@ -178,7 +176,7 @@ class cutting_problem:
         7. Objective function
     """
 
-    def __init__(self,file=None, debug_mode=False, buffer=0.0, sort_criteria="area", rotate_criteria="none"):
+    def __init__(self,file=None, debug_mode=False, buffer=0.0, sort_criteria="area", rotate_criteria="none", neighbourhood_functions = []):
         self.data, self.width = load(file)
         self.debug_mode = debug_mode
         self.lowerbound = self.data.area/self.width
@@ -186,6 +184,8 @@ class cutting_problem:
 
         self.sort_criteria = sort_criteria
         self.rotate_criteria = rotate_criteria
+        
+        self.neighbourhood_functions = neighbourhood_functions
 
         self.buffer = buffer
 
@@ -233,8 +233,7 @@ class cutting_problem:
         print("Initial solution generated with height", objective(self.solution))
 
     def search(self):
-        neighbourhood_functions = neighbourhoods_testing()
-        return self.variable_neighbourhood_descent(self.data, neighbourhoods=neighbourhood_functions)
+        return self.variable_neighbourhood_descent(self.data, neighbourhoods=self.neighbourhood_functions)
 
     def run(self):
         """
@@ -252,7 +251,10 @@ class cutting_problem:
             print("generated initial soln")
 
         #Search
+        start = time.clock()
         self.data = self.search()
+        end = time.clock()
+        search_time = end - start
         self.solution = self.place(self.data)
         final_height = objective(self.solution)
 
@@ -264,7 +266,8 @@ class cutting_problem:
         print("Waste is " + str(waste))
 
         avg_time = sum(self.placement_times)/len(self.placement_times)
-        print("Average placement time was {} milliseconds".format(avg_time))
+        print("Search took {} seconds".format(search_time))
+        print("Average placement time was {} milliseconds".format(avg_time*1000))
         print("Number of placements searched was {} ".format(self.placements_searched))
         return self.solution,final_height, avg_time, self.placements_searched
 
@@ -302,9 +305,6 @@ class cutting_problem:
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-
-        
-
         #keep track of previous, best solution
         initial_sequence = data
         initial_solution = self.place(initial_sequence)
@@ -330,9 +330,8 @@ class cutting_problem:
             next_sequence = neighbourhood[i]
             next_soln = self.place(next_sequence)
             next_obj = objective(next_soln)
-            #print("Current objective: {} Next objective {}".format(best_obj,next_obj))
+            
             #if acceptance function is fulfilled, replace best sequence
-
             if acceptance_function(best_obj, next_obj):
                 print("Best solution in neighbourhood improved from {} to {}".format(best_obj, next_obj))
                 best_obj = next_obj
@@ -347,13 +346,15 @@ class cutting_problem:
     
     def neighbourhood_change(self, current_sequence, next_sequence, k):
         """
-        Neighbourhood change function
+        If solution is better, reset to first neighbourhood function.
+        If solution is same or worse, increment k to move to next function 
 
         :param current_sequence: Current best solution
         :param compare_sequence: Best solution in current neighbourhood
-        :param k: Neighbourhod index
+        :param k: Neighbourhood function index
         :return: Improved slutin and a k
         """
+        #Calculate performance of given sequences
         current_solution = self.place(current_sequence)
         current_obj = objective(current_solution)
 
@@ -371,13 +372,14 @@ class cutting_problem:
 
     def variable_neighbourhood_descent(self, data, neighbourhoods=[]):
         """
-
-        :param names:
-        :param neighbourhoods:
-        :param data: current best solution
+        Implementation of Variable Neighbourhood Descent, which iterates through a given list of neighbourhood functions.
+        Each time an improvement on the current solution is found, it resets back to the first neighbourhood.
+        :param neighbourhoods: List of neighbourhood functions
+        :param data: Initial sequence to start search
         :return:
         """
         k_max = len(neighbourhoods)
+        #Set the initial sequence as the best sequence
         best_sequence = data
         
         k = 0
