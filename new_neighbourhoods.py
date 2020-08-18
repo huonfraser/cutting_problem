@@ -296,6 +296,10 @@ def desc_neighbourhoods_small():
 def neighbourhoods_testing1():
     return [nh_swap1,nh_block1,nh_rotate1]
 
+def neighbourhoods_testing1():
+    return [nh_swap1,nh_block1,nh_rotate1,
+            nh_swap2,nh_block2,nh_rotate2,
+            nh_swap3,nh_block3,nh_rotate3]
         
 numbers = []
 

@@ -2,10 +2,12 @@ from placement import *
 from view import *
 from neighbourhood import *
 import sys
+from experimentation import *
 
 from random import randint
 
 import datetime
+import time
 
 
 class Data:
@@ -31,6 +33,7 @@ class Data:
         total = 0
 
         for d in self.data:
+            #print("{}, {}".format(d[1],d[2]))
             total += d[1]*d[2]
 
         return total
@@ -175,8 +178,7 @@ class cutting_problem:
         7. Objective function
     """
 
-    def __init__(self,file=None, debug_mode=False, buffer=0.0, sort_criteria="area", rotate_criteria="none",
-                 reduced_descent=False):
+    def __init__(self,file=None, debug_mode=False, buffer=0.0, sort_criteria="area", rotate_criteria="none"):
         self.data, self.width = load(file)
         self.debug_mode = debug_mode
         self.lowerbound = self.data.area/self.width
@@ -186,7 +188,6 @@ class cutting_problem:
         self.rotate_criteria = rotate_criteria
 
         self.buffer = buffer
-        self.reduced_descent = reduced_descent
 
         self.placement_times = []
         self.placements_searched = 0
@@ -231,18 +232,11 @@ class cutting_problem:
 
         print("Initial solution generated with height", objective(self.solution))
 
-    def search(self, reduced_descent=False):
-        neighbourhood_functions = [neighbourhood_insert, neighbourhood_swap, neighbourhood_rotate]
-        n_names = ["insert", "swap", "rotate"]
+    def search(self):
+        neighbourhood_functions = neighbourhoods_testing()
+        return self.variable_neighbourhood_descent(self.data, neighbourhoods=neighbourhood_functions)
 
-        return self.large_neighbourhood_search(self.data,neighbourhood_function)
-
-        if reduced_descent:
-            return self.reduced_variable_neighbourhood(self.data, neighbourhoods=neighbourhood_functions, names=n_names)
-        else:
-            return self.variable_neighbourhood_descent(self.data, neighbourhoods=neighbourhood_functions, names=n_names)
-
-    def run(self, num_iterations=1000):
+    def run(self):
         """
 
         :return: solution, height average placement time, number of placements searched
@@ -258,7 +252,7 @@ class cutting_problem:
             print("generated initial soln")
 
         #Search
-        self.data = self.search(reduced_descent=self.reduced_descent)
+        self.data = self.search()
         self.solution = self.place(self.data)
         final_height = objective(self.solution)
 
@@ -269,15 +263,10 @@ class cutting_problem:
         waste = 1.0-(self.data.calc_area())/(final_height*self.width)
         print("Waste is " + str(waste))
 
-<<<<<<< HEAD
-        #print("Average placement time was {}".format(sum(self.placement_times)/len(self.placement_times)))
-        return self.solution
-=======
         avg_time = sum(self.placement_times)/len(self.placement_times)
         print("Average placement time was {} milliseconds".format(avg_time))
         print("Number of placements searched was {} ".format(self.placements_searched))
         return self.solution,final_height, avg_time, self.placements_searched
->>>>>>> 7e5ed786752bf9c81c237ef4841515d5a7bc724d
 
     def view(self):
         """
@@ -294,17 +283,17 @@ class cutting_problem:
         :param data: data format list of tuple [(id,width,height)]
         :return:
         """
-        start_time = datetime.datetime.now()
+        start_time = time.clock()
 
 
         solution = bottom_left_fill(data, self.width, self.upperbound, debug_mode=self.debug_mode, buffer=self.buffer)
-        end_time = datetime.datetime.now()
+        end_time = time.clock()
         run_time = end_time - start_time
-        self.placement_times.append(run_time.microseconds*1000) # time in microseconds
+        self.placement_times.append(run_time) # time in microseconds
         return solution
         # return Solution()
 
-    def search_neighbourhoods(self, data, neighbourhood_function, acceptance_function=acceptance_basic, first_improvement=True):
+    def search_neighbourhood(self, data, neighbourhood_function, acceptance_function=acceptance_basic, first_improvement=True):
         """
         Search heuristic that takes a sequence of data and modifies them according to a neighbourhood
         :param first_improvement:
@@ -314,18 +303,20 @@ class cutting_problem:
         :return:
         """
 
-        neighbourhood = neighbourhood_function(data)
-        length = len(neighbourhood)
-        print("Neighbourhood of size {} ".format(length))
-        self.placements_searched +=length
+        
 
         #keep track of previous, best solution
         initial_sequence = data
         initial_solution = self.place(initial_sequence)
         initial_objective = objective(initial_solution)
+        
+        neighbourhood = neighbourhood_function(data)
+        length = len(neighbourhood)
+        print("Neighbourhood of size {} ".format(length))
+        self.placements_searched +=length
 
         #keep track of best solution found in this neighbourhood
-        best_sequence = neighbourhood[1]
+        best_sequence = neighbourhood[0]
         best_solution = self.place(data)
         best_obj = objective(best_solution)
 
@@ -343,7 +334,7 @@ class cutting_problem:
             #if acceptance function is fulfilled, replace best sequence
 
             if acceptance_function(best_obj, next_obj):
-                print("Found improvement from {} to {}".format(best_obj, next_obj))
+                print("Best solution in neighbourhood improved from {} to {}".format(best_obj, next_obj))
                 best_obj = next_obj
                 best_sequence = next_sequence
                 best_solution = next_soln
@@ -371,12 +362,14 @@ class cutting_problem:
 
         if next_obj < current_obj: #neighbourhood gave a better solution
             print("Neighbourhood {} improved from {} to {}".format(k, current_obj, next_obj))
-            return next_sequence, k
+            return next_sequence, 1
         else:
             print("Neighbourhood {} saw no improvement".format(k))
             return current_sequence, k+1
+        
+   
 
-    def variable_neighbourhood_descent(self, data, neighbourhoods=[], names=[]):
+    def variable_neighbourhood_descent(self, data, neighbourhoods=[]):
         """
 
         :param names:
@@ -386,36 +379,16 @@ class cutting_problem:
         """
         k_max = len(neighbourhoods)
         best_sequence = data
+        
         k = 0
+        
         while k < k_max: #iterate until no improvements in any neighbourhood
-            print("searching {}".format(names[k]))
-            compare_sequence = self.search_neighbourhoods(data, neighbourhoods[k], acceptance_basic, False)
+            print("searching {}".format(neighbourhoods[k].__name__))
+           
+            compare_sequence = self.search_neighbourhood(best_sequence, neighbourhoods[k], acceptance_basic, False)
             best_sequence, k = self.neighbourhood_change(best_sequence, compare_sequence, k)
-
+            
         print("Finished VND")
         return best_sequence
-    
-    def reduced_variable_neighbourhood(self, data, num_iterations=10000000, neighbourhoods=[], names=[]):
-        """
-        Need to work out neighbourhood change
-        :param data:
-        :param num_iterations:
-        :param neighbourhoods:
-        :param names:
-        :return:
-        """
-        k_max = len(neighbourhoods)
-        best_sequence = data
-        k = 0
-        for i in range(0, num_iterations):
-            if i % 100 == 0:
-                print("Iteration number {}".format(i))
-            while k < k_max:
-                compare_sequence = shake(neighbourhoods[k], data)
-                #compare_solution = self.place(compare_sequence)
-                best_sequence, k = self.neighbourhood_change(best_sequence, compare_sequence, k)
-                
-        return best_sequence
 
-    def large_neighbourhood_search(self,data,num_iterations,neighbourhoods=[]):
         

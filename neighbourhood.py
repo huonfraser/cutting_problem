@@ -67,8 +67,33 @@ def neighbourhood_swap_adjacent(data):
 
     return neighbourhood
 
+def nh_swap_adjacent(sequence, n_swaps):
+    """
+    Generates the neighbourhood of all sequences from performing n adjacent swaps
 
-def neighbourhood_shift_left(data):
+    Parameters
+    ----------
+    sequence : TYPE
+        DESCRIPTION.
+    n_swaps : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    nh = []
+    last = len(sequence)-n_swaps*2
+    for i in range(0, last):
+        nh_element = sequence.copy()
+        swap_adjacent(nh_element, 2, i)
+        nh.append(nh_element)
+    
+    return nh
+
+
+def neighbourhood_shift_left(data, n):
     """
     Generate neighbourhood by placing last element at the front
     :param data:
@@ -85,7 +110,7 @@ def neighbourhood_shift_left(data):
     return neighbourhood
 
 
-def neighbourhood_shift_right(data):
+def neighbourhood_shift_right(data, n):
     """
     Generate neighbourhood by placing last element at the front
     :param data:
@@ -148,11 +173,6 @@ def neighbourhood_sample(neighbourhood, sample_proportion):
         sample.append(sampled_sequence)
     return sample
 
-def nh_insert_last(data):
-    neighbourhood = []
-    rectangles = data.data
-    n = len(rectangles)
-    for i in range(n):
         
 
 def highest_rectangle(rectangles):
