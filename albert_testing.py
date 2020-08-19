@@ -1,11 +1,13 @@
 from skeleton import *
 from placement import *
 from random import randint
+from neighbourhood import *
 from view import *
 
-file = "data\M1a.csv"
+neighbourhoods = desc_neighbourhoods_small()
+file = "data\M3d.csv"
 #cut = cutting_problem(file,debug_mode=False, reduced_descent = False,sort_criteria="none", rotate_criteria="none")
-cut = cutting_problem(file,debug_mode=False)
+cut = cutting_problem(file,debug_mode=False, neighbourhood_functions = neighbourhoods)
 
 #soln = cut.run(num_iterations=5)
 #soln = cut.initial_solution(sort_criteria="none", rotate_criteria="none")
