@@ -64,7 +64,6 @@ def neighbourhood_swap_adjacent(data):
         new_sequence[i] = temp2
         new_sequence[i+1] = temp1
         neighbourhood.append(skeleton.Data(new_sequence))
-
     return neighbourhood
 
 def nh_swap_adjacent(sequence, n_swaps):
@@ -144,6 +143,7 @@ def neighbourhood_insert(data):
             neighbourhood.append(skeleton.Data(new_sequence))
 
     return neighbourhood
+
 
 def neighbourhood_sample(neighbourhood, sample_proportion):
     """
