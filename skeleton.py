@@ -363,7 +363,7 @@ class cutting_problem:
 
         if next_obj < current_obj: #neighbourhood gave a better solution
             print("Neighbourhood {} improved from {} to {}".format(k, current_obj, next_obj))
-            return next_sequence, 1
+            return next_sequence, 0
         else:
             print("Neighbourhood {} saw no improvement".format(k))
             return current_sequence, k+1

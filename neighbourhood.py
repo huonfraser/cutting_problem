@@ -52,7 +52,7 @@ def nh_swap(data):
     
     return nh
 
-def nh_insert(sequence):
+def nh_insert(data):
     """
     Generates the neighbourhood of all possible sequences from single element insertions
 
@@ -67,6 +67,7 @@ def nh_insert(sequence):
         DESCRIPTION.
 
     """
+    sequence = data.data
     nh = []
     length = len(sequence)
     for i in range(0, length):
@@ -76,7 +77,7 @@ def nh_insert(sequence):
                 rect = nh_element[i]
                 nh_element.insert(j, rect)
                 nh_element.remove(rect)
-                nh.append(nh_element)
+                nh.append(skeleton.Data(nh_element))
     
     return nh
             
@@ -131,7 +132,7 @@ def swap_adjacent_block(sequence, n_swaps, start):
     return sequence
 
 
-def nh_shift_left(data):
+def nh_shift(data):
     """
     Generate neighbourhood by placing last element at the front
     :param data:
@@ -148,22 +149,7 @@ def nh_shift_left(data):
     return neighbourhood
 
 
-def nh_shift_right(data):
-    """
-    Generate neighbourhood by placing last element at the front
-    :param data:
-    :return:
-    """
-    neighbourhood = []
-    rectangles = data.data
-    length = len(rectangles)
-    for i in range(0, length-1):
-        new_sequence = rectangles[0:length].copy()
-        first = [rectangles[length-1]].copy()
-        new_sequence = first + new_sequence
-        neighbourhood.append(skeleton.Data(new_sequence))
 
-    return neighbourhood
      
 def nh_swap_adjacent(data, n_swaps):
     """
@@ -183,7 +169,7 @@ def nh_swap_adjacent(data, n_swaps):
     """
     sequence = data.data
     nh = []
-    last = len(sequence)-n_swaps*2
+    last = len(sequence)-n_swaps*2+1
     for i in range(0, last):
         nh_element = sequence.copy()
         swap_adjacent(nh_element, n_swaps, i)
@@ -209,7 +195,7 @@ def nh_swap_adjacent_block(data, n_elements):
     """
     sequence = data.data
     nh = []
-    last = len(sequence) - n_elements*2
+    last = len(sequence) - n_elements*2+1
     for i in range(0, last):
         nh_element = sequence.copy()
         swap_adjacent_block(nh_element, n_elements, i)
@@ -380,18 +366,46 @@ def desc_neighbourhoods_med():
             nh_swap2,nh_block2,nh_rotate2,
             nh_swap1,nh_block1,nh_rotate1]
 
-def neighbourhoods_testing1():
-    return [nh_swap1,nh_block1,nh_rotate1]
+def neighbourhoods_2_desc():
+    return [nh_swap2,nh_block2,nh_rotate2,
+            nh_swap1,nh_block1,nh_rotate1]
 
-def desc_neighbourhoods_small():
+def neighbourhoods_2_cycle():
+    return [nh_swap2, nh_swap1,
+            nh_block2, nh_block1,
+            nh_rotate2,nh_rotate1]
+
+
+    
+
+def neighbourhoods_1():
+    return [nh_swap1, nh_rotate1]
+
+
+
+def neighbourhoods_3_desc():
     return [nh_swap3,nh_block3,nh_rotate3,
             nh_swap2,nh_block2,nh_rotate2,
             nh_swap1,nh_block1,nh_rotate1]
 
-def neighbourhoods_small_insert_finish():
-    return [nh_swap3,nh_block3,nh_rotate3,
-            nh_swap2,nh_block2,nh_rotate2,
-            nh_swap1,nh_block1,nh_rotate1]
+def nh_test1():
+    return [nh_swap1,nh_rotate1,nh_insert]
+
+
+
+# =============================================================================
+# def neighbourhoods_small_insert_finish():
+#     return [nh_swap3,nh_block3,nh_rotate3,
+#             nh_swap2,nh_block2,nh_rotate2,
+#             nh_swap1,nh_block1,nh_rotate1]
+# =============================================================================
+
+def neighbourhoods_3_cycle():
+    return [nh_swap3, nh_swap2, nh_swap1,
+            nh_block3, nh_block2, nh_block1,
+            nh_rotate3, nh_rotate2, nh_rotate1]
+
+
 
 
 
