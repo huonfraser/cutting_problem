@@ -25,7 +25,7 @@ def swap(sequence, i1, i2):
     sequence[i1] = sequence[i2]
     sequence[i2] = temp
 
-def nh_swap(data):
+def nh_swap_exhaustive(data):
     """
     Generates the neighbourhood of all possible sequences from single element swaps
 
@@ -47,12 +47,12 @@ def nh_swap(data):
         for j in range(i+1, length):
             if i!=j:
                 nh_element = sequence.copy()
-                swap(nh_element,i,k)
+                swap(nh_element,i,j)
                 nh.append(skeleton.Data(nh_element))
     
     return nh
 
-def nh_insert(data):
+def nh_insert_exhaustive(data):
     """
     Generates the neighbourhood of all possible sequences from single element insertions
 
@@ -341,69 +341,24 @@ def nh_rotate10(data):
 
 #nh lists for testing
 
-def full_neighbourhood():
-    fns = [nh_swap1, nh_swap2,nh_swap3, nh_swap4,nh_swap5, nh_swap6,nh_swap7, nh_swap8,nh_swap9, nh_swap10,
-           nh_block1, nh_block2,nh_block3, nh_block4,nh_block5, nh_block6,nh_block7, nh_block8,nh_block9, nh_block10,
-           nh_rotate1, nh_rotate2,nh_rotate3, nh_rotate4,nh_rotate5, nh_rotate6,nh_rotate7, nh_rotate8,nh_rotate9, nh_rotate10]
-    return fns
-
-def desc_neighbourhoods_large():
-    return [nh_swap10,nh_block10,nh_rotate10,
-            nh_swap9,nh_block9,nh_rotate9,
-            nh_swap8,nh_block8,nh_rotate8,
-            nh_swap7,nh_block7,nh_rotate7,
-            nh_swap6,nh_block6,nh_rotate6,
-            nh_swap5,nh_block5,nh_rotate5,
-            nh_swap4,nh_block4,nh_rotate4,
-            nh_swap3,nh_block3,nh_rotate3,
-            nh_swap2,nh_block2,nh_rotate2,
-            nh_swap1,nh_block1,nh_rotate1]
-
-def desc_neighbourhoods_med():
+def neighbourhoods_long():
     return [nh_swap5,nh_block5,nh_rotate5,
             nh_swap4,nh_block4,nh_rotate4,
             nh_swap3,nh_block3,nh_rotate3,
             nh_swap2,nh_block2,nh_rotate2,
             nh_swap1,nh_block1,nh_rotate1]
 
-def neighbourhoods_2_desc():
-    return [nh_swap2,nh_block2,nh_rotate2,
-            nh_swap1,nh_block1,nh_rotate1]
-
-def neighbourhoods_2_cycle():
-    return [nh_swap2, nh_swap1,
-            nh_block2, nh_block1,
-            nh_rotate2,nh_rotate1]
-
-
-    
-
-def neighbourhoods_1():
-    return [nh_swap1, nh_rotate1]
-
-
-
-def neighbourhoods_3_desc():
+def neighbourhoods_med():
     return [nh_swap3,nh_block3,nh_rotate3,
             nh_swap2,nh_block2,nh_rotate2,
             nh_swap1,nh_block1,nh_rotate1]
 
-def nh_test1():
-    return [nh_swap1,nh_rotate1,nh_insert]
+def neighbourhoods_short():
+    return [nh_swap1, nh_rotate1]
 
 
 
-# =============================================================================
-# def neighbourhoods_small_insert_finish():
-#     return [nh_swap3,nh_block3,nh_rotate3,
-#             nh_swap2,nh_block2,nh_rotate2,
-#             nh_swap1,nh_block1,nh_rotate1]
-# =============================================================================
 
-def neighbourhoods_3_cycle():
-    return [nh_swap3, nh_swap2, nh_swap1,
-            nh_block3, nh_block2, nh_block1,
-            nh_rotate3, nh_rotate2, nh_rotate1]
 
 
 
