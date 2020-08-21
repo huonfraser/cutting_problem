@@ -1,4 +1,4 @@
-from skeleton import *
+from main import *
 
 
 def best_improvement(data, neighbourhood_function):

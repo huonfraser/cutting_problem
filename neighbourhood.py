@@ -1,4 +1,4 @@
-import skeleton
+import main
 
 
     
@@ -48,7 +48,7 @@ def nh_swap(data):
             if i!=j:
                 nh_element = sequence.copy()
                 swap(nh_element,i,k)
-                nh.append(skeleton.Data(nh_element))
+                nh.append(main.Data(nh_element))
     
     return nh
 
@@ -77,7 +77,7 @@ def nh_insert(data):
                 rect = nh_element[i]
                 nh_element.insert(j, rect)
                 nh_element.remove(rect)
-                nh.append(skeleton.Data(nh_element))
+                nh.append(main.Data(nh_element))
     
     return nh
             
@@ -144,7 +144,7 @@ def nh_shift(data):
     for i in range(0, length-1):
         new_sequence = rectangles[1:length].copy()
         new_sequence.append(rectangles[0])
-        neighbourhood.append(skeleton.Data(new_sequence))
+        neighbourhood.append(main.Data(new_sequence))
 
     return neighbourhood
 
@@ -173,7 +173,7 @@ def nh_swap_adjacent(data, n_swaps):
     for i in range(0, last):
         nh_element = sequence.copy()
         swap_adjacent(nh_element, n_swaps, i)
-        nh.append(skeleton.Data(nh_element))
+        nh.append(main.Data(nh_element))
     
     return nh
 
@@ -199,7 +199,7 @@ def nh_swap_adjacent_block(data, n_elements):
     for i in range(0, last):
         nh_element = sequence.copy()
         swap_adjacent_block(nh_element, n_elements, i)
-        nh.append(skeleton.Data(nh_element))
+        nh.append(main.Data(nh_element))
         #print(nh_element)
     
     return nh
@@ -237,7 +237,7 @@ def nh_rotate_adjacent(data, n_elements):
     for i in range(0,last):
         nh_element = sequence.copy()
         rotate_adjacent(nh_element, n_elements, i)
-        nh.append(skeleton.Data(nh_element))
+        nh.append(main.Data(nh_element))
     
     return nh
 

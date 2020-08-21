@@ -5,7 +5,7 @@ Created on Mon Aug 17 16:08:28 2020
 @author: albib
 """
 
-import skeleton
+import main
 
 def swap(data, i1, i2):
     """
@@ -104,7 +104,7 @@ def nh_swap_adjacent(data, n_swaps):
     for i in range(0, last):
         nh_element = sequence.copy()
         swap_adjacent(nh_element, n_swaps, i)
-        nh.append(skeleton.Data(nh_element))
+        nh.append(main.Data(nh_element))
     
     return nh
 
@@ -130,7 +130,7 @@ def nh_swap_adjacent_block(data, n_elements):
     for i in range(0, last):
         nh_element = sequence.copy()
         swap_adjacent_block(nh_element, n_elements, i)
-        nh.append(skeleton.Data(nh_element))
+        nh.append(main.Data(nh_element))
         #print(nh_element)
     
     return nh
@@ -168,7 +168,7 @@ def nh_rotate_adjacent(data, n_elements):
     for i in range(0,last):
         nh_element = sequence.copy()
         rotate_adjacent(nh_element, n_elements, i)
-        nh.append(skeleton.Data(nh_element))
+        nh.append(main.Data(nh_element))
     
     return nh
 

@@ -1,10 +1,10 @@
-from skeleton import *
+from main import *
 from placement import *
 from random import randint
 from view import *
 
-file="data\\M1a.csv"
-cut = cutting_problem(file, debug_mode=False, buffer=0.0, sort_criteria="height", rotate_criteria="up")
+file= "../data/M1a.csv"
+cut = cut = cutting_problem(file,debug_mode=False,neighbourhood_functions=desc_neighbourhoods_med())
 #cut = cutting_problem(file, debug_mode=False, buffer=0.0, sort_criteria="none", rotate_criteria="none")
 solns = []
 

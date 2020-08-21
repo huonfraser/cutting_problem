@@ -1,4 +1,4 @@
-from skeleton import *
+from main import *
 import PIL.ImageDraw as ImageDraw
 from colour import Color
 from tkinter import Canvas, Tk, PhotoImage
