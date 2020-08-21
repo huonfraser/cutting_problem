@@ -1,4 +1,4 @@
-from skeleton import *
+from main import *
 
 sol1 = Solution([
     ("a",0,0,4,4),

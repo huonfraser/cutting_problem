@@ -1,4 +1,4 @@
-from skeleton import *
+from main import *
 from placement import *
 from random import randint
 from neighbourhood import *
@@ -7,9 +7,9 @@ from view import *
 
 
 
-file_m1a = "data\m1a.csv"
-file_m2c = "data\m2c.csv"
-file_m3d = "data\m3d.csv"
+file_m1a = "../data/M1a.csv"
+file_m2c = "../data/M2c.csv"
+file_m3d = "../data/M3d.csv"
 
 nh_short = neighbourhoods_short()
 nh_med = neighbourhoods_med()

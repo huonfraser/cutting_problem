@@ -6,14 +6,13 @@ from random import randint
 
 import datetime
 import time
+from functools import partial
 
 
 class Data:
     """
-    Holder class for input data set,
-    represent a sequence of data
-
-    data format list of tuple [(id,width,height)]
+    Represent an sequence of data in the form of a tuple [(id,width,height)]
+    Contains a helper method to calculate the area of a dataset
     """
 
     data = []
@@ -28,6 +27,10 @@ class Data:
             self.area = area
 
     def calc_area(self):
+        """
+        Calculate the area of a data set
+        :return:
+        """
         total = 0
 
         for d in self.data:
@@ -39,7 +42,8 @@ class Data:
 
 class Solution:
     """
-    Soln format list of tuple [(id,posx,posy,width,height)]
+    Represnt a solution in the format of list of tuple [(id,posx,posy,width,height)]
+    Contains a method to verify feasability of a solution
     """
 
     soln = []
@@ -122,7 +126,7 @@ def load(file_name):
     """
     Load data from a file, return a sequence of soln and width of the file
     :param file_name:
-    :return: Loaded instanc
+    :return: Loaded data
 
     data format list of tuple [(id,width,height)]
     """
@@ -131,40 +135,41 @@ def load(file_name):
         line1 = file.readline().replace("\n","") #size line
         line2 = file.readline().replace("\n","") #area line
         line3 = file.readline() #col names file
-        #print(line1)
-        #print(line2)
-        #print(line3)
+
         area = float(line2.split(",")[1])
         size = float(line1.split(",")[1])
-        #print(area,size)
         content_lines = file.readlines()
         for line in content_lines:
             line = line.replace("\n","")
             splat = line.split(",",)
             data.append((float(splat[0]),float(splat[1]),float(splat[2])))
-        #print(data)
     return Data(data, area), size
 
 
 def objective(soln):
-    """Calculate waste, or minimize height"""
-    #Calculates height of solution by finding the highest placed block
+    """Calculate waste, via calculating the highest placed block"""
     rectangles = soln.soln
     highest_point = 0
     for rect in rectangles:
         pos_y = rect[2]+rect[4]
         if pos_y > highest_point:
             highest_point = pos_y
-        
     return highest_point
 
 
 def acceptance_basic(obj_incumbent, obj_challenger):
+    """
+    Acceptence criterion for vns
+    :param obj_incumbent:
+    :param obj_challenger:
+    :return:
+    """
     return obj_challenger < obj_incumbent
 
 
 class cutting_problem:
     """
+    Main class that encapsulates the cutting problem algorithm
         Run a local search algorithm:
         Has the following elements:
         1. Loading function
@@ -176,14 +181,18 @@ class cutting_problem:
         7. Objective function
     """
 
-    def __init__(self,file=None, debug_mode=False, buffer=0.0, sort_criteria="area", rotate_criteria="none", neighbourhood_functions = []):
+    def __init__(self,file=None, debug_mode=False, buffer=0.0, neighbourhood_functions = []):
+        """
+
+        :param file:
+        :param debug_mode: Enabling this prints outputs
+        :param buffer: A saw width function
+        :param neighbourhood_functions: neighbourhood functions to run with, a list of functions
+        """
         self.data, self.width = load(file)
         self.debug_mode = debug_mode
-        self.lowerbound = self.data.area/self.width
-        self.upperbound = self.lowerbound * 2 #claculat upper bound
-
-        self.sort_criteria = sort_criteria
-        self.rotate_criteria = rotate_criteria
+        self.lowerbound = self.data.area/self.width #calculate theoretical best solution
+        self.upperbound = self.lowerbound * 2 #calculate upper bound solution
         
         self.neighbourhood_functions = neighbourhood_functions
 
@@ -200,7 +209,7 @@ class cutting_problem:
 
     def initial_solution(self,sort_criteria="none", rotate_criteria="none"):
         """
-        Find an initial sequence
+        Find an initial sequence according to the given criterion.
         :return:
         """
 
@@ -229,15 +238,56 @@ class cutting_problem:
 
         self.data = Data(sorted)
         self.solution = self.place(self.data)
-
-        print("Initial solution generated with height", objective(self.solution))
+        if self.debug_mode:
+            print("Initial solution generated with height", objective(self.solution))
 
     def search(self):
-        return self.variable_neighbourhood_descent(self.data, neighbourhoods=self.neighbourhood_functions)
+        """
+        Main search algorithm
+
+        Nests Variable Neighbourhood Desecent inside various initial placements, returning the best solution
+        :return:
+        """
+
+        placements = [partial(self.initial_solution,"height","none"),
+                      partial(self.initial_solution, "height", "up"),
+                      partial(self.initial_solution, "height", "down"),
+                      partial(self.initial_solution, "min", "none"),
+                      partial(self.initial_solution, "min", "up"),
+                      partial(self.initial_solution, "min", "down"),
+                      partial(self.initial_solution, "max", "none"),
+                      partial(self.initial_solution, "max", "up"),
+                      partial(self.initial_solution, "max", "down"),
+                      partial(self.initial_solution, "area", "none"),
+                      partial(self.initial_solution, "area", "up"),
+                      partial(self.initial_solution, "area", "down")
+        ]
+        best_val = self.upperbound
+        best_seq = []
+        best_soln = []
+
+        for placem in placements:
+            # print("Shaking"")
+            placem()
+            current_seq = self.variable_neighbourhood_descent(self.data, neighbourhoods=self.neighbourhood_functions)
+            current_soln = self.place(current_seq)
+            current_value = objective(current_soln)
+
+
+            if current_value < best_val:
+                best_val = current_value
+                best_soln = current_soln
+                best_seq = current_seq
+
+            if best_val == self.lowerbound:
+                #short circuit if found optimum solution
+                return best_seq
+
+        return best_seq
 
     def run(self):
         """
-
+        Runs the search, alongside time and function call counts
         :return: solution, height average placement time, number of placements searched
         """
 
@@ -245,10 +295,6 @@ class cutting_problem:
 
         self.placements_searched = 0
         self.placement_times = []
-
-        self.initial_solution(rotate_criteria=self.rotate_criteria, sort_criteria=self.sort_criteria)
-        if self.debug_mode:
-            print("generated initial soln")
 
         #Search
         start = time.clock()
@@ -273,14 +319,14 @@ class cutting_problem:
 
     def view(self):
         """
-        #Step 4: Visualise soln
+        #Step 4: Visualise soln, passes problems dimension to the view method
         :return:
         """
         view(self.solution, self.width, self.upperbound)
 
     def place(self, data):
         """
-        Placement algorithm that takes a sequence of data and places them according to a heuristic
+        Encapsulates bottom left fill alongside a timer
 
         Record time
         :param data: data format list of tuple [(id,width,height)]
@@ -312,7 +358,8 @@ class cutting_problem:
         
         neighbourhood = neighbourhood_function(data)
         length = len(neighbourhood)
-        print("Neighbourhood of size {} ".format(length))
+        if self.debug_mode:
+            print("Neighbourhood of size {} ".format(length))
         self.placements_searched +=length
 
         #keep track of best solution found in this neighbourhood
@@ -333,7 +380,8 @@ class cutting_problem:
             
             #if acceptance function is fulfilled, replace best sequence
             if acceptance_function(best_obj, next_obj):
-                print("Best solution in neighbourhood improved from {} to {}".format(best_obj, next_obj))
+                if self.debug_mode:
+                    print("Best solution in neighbourhood improved from {} to {}".format(best_obj, next_obj))
                 best_obj = next_obj
                 best_sequence = next_sequence
                 best_solution = next_soln
@@ -362,13 +410,14 @@ class cutting_problem:
         next_obj = objective(next_solution)
 
         if next_obj < current_obj: #neighbourhood gave a better solution
-            print("Neighbourhood {} improved from {} to {}".format(k, current_obj, next_obj))
+            if self.debug_mode:
+                print("Neighbourhood {} improved from {} to {}".format(k, current_obj, next_obj))
             return next_sequence, 0
         else:
-            print("Neighbourhood {} saw no improvement".format(k))
+            if self.debug_mode:
+                print("Neighbourhood {} saw no improvement".format(k))
             return current_sequence, k+1
         
-   
 
     def variable_neighbourhood_descent(self, data, neighbourhoods=[]):
         """
@@ -385,12 +434,13 @@ class cutting_problem:
         k = 0
         
         while k < k_max: #iterate until no improvements in any neighbourhood
-            print("searching {}".format(neighbourhoods[k].__name__))
+            if self.debug_mode:
+                print("searching {}".format(neighbourhoods[k].__name__))
            
             compare_sequence = self.search_neighbourhood(best_sequence, neighbourhoods[k], acceptance_basic, False)
             best_sequence, k = self.neighbourhood_change(best_sequence, compare_sequence, k)
-            
-        print("Finished VND")
+        if self.debug_mode:
+            print("Finished VND")
         return best_sequence
 
         
