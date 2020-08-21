@@ -4,11 +4,45 @@ from random import randint
 from neighbourhood import *
 from view import *
 
-neighbourhoods = desc_neighbourhoods_small()
-file = "data\M3d.csv"
-#cut = cutting_problem(file,debug_mode=False, reduced_descent = False,sort_criteria="none", rotate_criteria="none")
-cut = cutting_problem(file,debug_mode=False, neighbourhood_functions = neighbourhoods)
 
+
+
+file_m1a = "data\m1a.csv"
+file_m2c = "data\m2c.csv"
+file_m3d = "data\m3d.csv"
+
+
+nh_2_desc = neighbourhoods_2_desc()
+nh_2_cycle = neighbourhoods_2_cycle()
+nh_3_desc = neighbourhoods_3_desc()
+nh_3_cycle = neighbourhoods_3_cycle()
+nh_1 = neighbourhoods_1()
+nh_block1 = [nh_block1]
+nh_test = nh_test1()
+
+
+#nh_small_insert = nh_small.append(nh_insert)
+
+#cut = cutting_problem(file,debug_mode=False, reduced_descent = False,sort_criteria="none", rotate_criteria="none")
+#m3d = cutting_problem(file,debug_mode=False, neighbourhood_functions = neighbourhoods)
+cut = cutting_problem(file_m2c,debug_mode=False,neighbourhood_functions=nh_test)
+
+# =============================================================================
+# experiments = []
+# 
+# experiments.append(cutting_problem(file_m1a,debug_mode=False,neighbourhood_functions=nh_small))
+# experiments.append(cutting_problem(file_m2c,debug_mode = False,neighbourhood_functions=nh_small))
+# experiments.append(cutting_problem(file_m3d,debug_mode=False,neighbourhood_functions=nh_small))
+# =============================================================================
+
+# =============================================================================
+# results = []
+# for exp in experiments:
+#     solution, final_height, avg_time, placements_searched = exp.run()
+#     results.append(final_height)
+#     print(str(solution))
+#     view(solution,exp.width,exp.upperbound)
+# =============================================================================
 #soln = cut.run(num_iterations=5)
 #soln = cut.initial_solution(sort_criteria="none", rotate_criteria="none")
 soln = cut.run()
