@@ -1,4 +1,4 @@
-from main import *
+from ../main import *
 from placement import *
 from random import randint
 from view import *

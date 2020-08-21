@@ -47,13 +47,10 @@ def nh_swap_exhaustive(data):
         for j in range(i+1, length):
             if i!=j:
                 nh_element = sequence.copy()
-<<<<<<< HEAD
-                swap(nh_element,i,j)
-                nh.append(skeleton.Data(nh_element))
-=======
+
                 swap(nh_element,i,k)
                 nh.append(main.Data(nh_element))
->>>>>>> 0a46f3a28e8d419fbe02f61825d9d6476cc61184
+
     
     return nh
 

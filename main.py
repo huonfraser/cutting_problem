@@ -335,7 +335,7 @@ class cutting_problem:
         start_time = time.clock()
 
 
-        solution = bottom_left_fill(data, self.width, self.upperbound, debug_mode=self.debug_mode, buffer=self.buffer)
+        solution = bottom_left_fill(data, self.width, self.upperbound, debug_mode=False, buffer=self.buffer)
         end_time = time.clock()
         run_time = end_time - start_time
         self.placement_times.append(run_time) # time in microseconds
