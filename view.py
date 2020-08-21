@@ -1,3 +1,6 @@
+# =============================================================================
+# Albert Bannister_1210510 Huon Fraser_1258237
+# =============================================================================
 from main import *
 import PIL.ImageDraw as ImageDraw
 from colour import Color

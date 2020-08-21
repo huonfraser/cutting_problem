@@ -1,3 +1,6 @@
+# =============================================================================
+# Albert Bannister_1210510 Huon Fraser_1258237
+# =============================================================================
 import Polygon  # library for handling polygons https://pypi.org/project/Polygon/#:~:text=Polygon%20is%20a%20python%20package,in%20a%20very%20intuitive%20way.
 import Polygon.Shapes
 import Polygon.IO
